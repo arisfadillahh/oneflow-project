@@ -48,3 +48,15 @@ Do not call a release synchronized only because the page returns HTTP 200. Compi
 - Container health: healthy.
 - Public route checks: `/`, `/dashboard/inbox`, `/agents/setup`, and `/whatsapp` returned HTTP 200.
 - Previous image reference remains in the compose backup for rollback.
+
+## Release record: monorepo 2026-09-07
+
+- Repository: `https://github.com/arisfadillahh/oneflow-project`
+- Commit: `9293042bb019dec9d60e9c1ac53661f51ecfe20a`
+- Build context: `frontend/` inside the monorepo.
+- Remote image: `oneflow-dashboard-web:monorepo-20260907`.
+- Image ID: `sha256:3f14b9767b5caee6766c83bf0f7d6164f4be0e50146b0d6844d60744a8e6e73c`.
+- Container health: healthy.
+- Compose backup: `/home/goffath/oneflow-deploy/docker-compose.before-monorepo-20260907.yml`.
+- Public route checks: `/`, `/dashboard/inbox`, `/agents/setup`, and `/whatsapp` returned HTTP 200.
+- Backend, AI, gateway, worker, database, Redis and MinIO were not recreated.
