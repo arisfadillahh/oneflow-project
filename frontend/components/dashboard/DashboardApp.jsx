@@ -958,6 +958,14 @@ export default function DashboardApp() {
   }, [waSessions]);
 
   useEffect(() => {
+    if (!auth?.token || activeView !== "whatsappTemplates") return;
+    const connectedSession = waSessions.find((session) => session.id === activeWaSessionId && session.status === "connected")
+      || waSessions.find((session) => session.status === "connected");
+    if (!connectedSession?.id) return;
+    loadMetaTemplates(connectedSession.id).catch(() => {});
+  }, [activeView, activeWaSessionId, auth?.token, waSessions]);
+
+  useEffect(() => {
     try {
       const stored = readAndMigrateStorageValue(window.localStorage, authStorageKey, legacyAuthStorageKey);
       if (stored) {
@@ -2636,6 +2644,7 @@ export default function DashboardApp() {
         body: JSON.stringify(metaTemplateForm),
       });
       showToast({ title: "Template diajukan", message: "Template dikirim ke Meta untuk ditinjau." });
+      setMetaTemplateForm({ name: "", category: "UTILITY", language: "id", body: "" });
       await loadMetaTemplates(activeWaSessionId);
     } catch (templateError) {
       setError(templateError.message);
