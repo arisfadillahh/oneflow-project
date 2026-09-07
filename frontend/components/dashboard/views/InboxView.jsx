@@ -582,7 +582,7 @@ export function InboxView({
                     disabled={!canSubmitManualMessage || busyKey === "conversation-manual-message"}
                     onClick={sendManualMessage}
                   >
-                    Send
+                    Kirim
                   </button>
                 </div>
               </div>
