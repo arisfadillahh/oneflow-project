@@ -61,6 +61,18 @@ Do not call a release synchronized only because the page returns HTTP 200. Compi
 - Public route checks: `/`, `/dashboard/inbox`, `/agents/setup`, and `/whatsapp` returned HTTP 200.
 - Backend, AI, gateway, worker, database, Redis and MinIO were not recreated.
 
+## Release record: channel navigation fix 2026-09-07
+
+- Repository: `https://github.com/arisfadillahh/oneflow-project`
+- Commit: `92599d5`
+- Change: fixed Channels navigation permissions and replaced generic setup copy that incorrectly told users to connect WhatsApp.
+- Local checks: `npm test` passed 33/33; `npm run build` passed with 24 routes.
+- Remote image: `oneflow-dashboard-web:channel-fix-20260907`.
+- Remote image ID: `sha256:c03ba9069ce2e40b0e40deab3a5e69ef639b773e7a5ad5a5080bf58d2427ebb2`.
+- Container health: healthy.
+- Public route checks: `/channels`, `/whatsapp`, and `/dashboard/inbox` returned HTTP 200; `/channels` page marker was present.
+- Compose backup: `/home/goffath/oneflow-deploy/docker-compose.before-channel-fix-20260907.yml`.
+
 ## Release record: channels center 2026-09-07
 
 - Repository: `https://github.com/arisfadillahh/oneflow-project`
