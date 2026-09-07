@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 300" role="img" aria-labelledby="title desc">
+  <title id="title">Pipeline CRM dari chat WhatsApp</title>
+  <desc id="desc">A simple three-stage pipeline moving incoming chats to AI-supported follow-up and admin action.</desc>
+  <defs>
+    <linearGradient id="panel" x1="0" x2="1" y1="0" y2="1"><stop stop-color="#fff"/><stop offset="1" stop-color="#f7fbff"/></linearGradient>
+    <linearGradient id="active" x1="0" x2="1" y1="0" y2="1"><stop stop-color="#22b7ff"/><stop offset=".6" stop-color="#2563eb"/><stop offset="1" stop-color="#7556ef"/></linearGradient>
+    <style>.f{font-family:Inter,"Segoe UI",Arial,sans-serif}.head{font-size:16px;font-weight:750;fill:#071c4d}.copy{font-size:11px;font-weight:500;fill:#60748e}.meta{font-size:9px;font-weight:750;letter-spacing:.48px;fill:#637791}</style>
+  </defs>
+  <rect width="960" height="300" rx="27" fill="#eef7ff"/>
+  <rect x="22" y="22" width="292" height="256" rx="21" fill="url(#panel)" stroke="#dce9f6"/><rect x="334" y="22" width="292" height="256" rx="21" fill="url(#panel)" stroke="#dce9f6"/><rect x="646" y="22" width="292" height="256" rx="21" fill="#071c4d"/>
+  <circle cx="51" cy="54" r="12" fill="#20c56b"/><circle cx="363" cy="54" r="12" fill="#2388ed"/><circle cx="675" cy="54" r="12" fill="#7c4dff"/>
+  <text x="75" y="60" class="f head">Chat masuk</text><text x="387" y="60" class="f head">AI siap</text><text x="699" y="60" class="f head" fill="#fff">Tindakan admin</text>
+  <rect x="43" y="91" width="250" height="61" rx="14" fill="#f5faff" stroke="#e1eaf5"/><text x="60" y="115" class="f meta" fill="#2388ed">LEAD BARU</text><text x="60" y="136" class="f copy">Tanya paket layanan</text>
+  <rect x="43" y="169" width="250" height="61" rx="14" fill="#f5faff" stroke="#e1eaf5"/><text x="60" y="193" class="f meta" fill="#2388ed">ORDER</text><text x="60" y="214" class="f copy">Cek stok produk</text>
+  <rect x="355" y="91" width="250" height="61" rx="14" fill="#edf6ff" stroke="#cee3f9"/><text x="372" y="115" class="f meta" fill="#2388ed">KNOWLEDGE VALID</text><text x="372" y="136" class="f copy">Jawaban siap dikirim</text>
+  <rect x="355" y="169" width="250" height="61" rx="14" fill="#f4efff" stroke="#e2dcff"/><text x="372" y="193" class="f meta" fill="#7c4dff">HANDOFF</text><text x="372" y="214" class="f copy">Butuh persetujuan</text>
+  <rect x="667" y="91" width="250" height="61" rx="14" fill="#102a68"/><text x="684" y="115" class="f meta" fill="#7ed2ff">ASSIGNED</text><text x="684" y="136" class="f copy" fill="#d1e2f6">Admin tindak lanjut</text>
+  <rect x="667" y="169" width="250" height="61" rx="14" fill="#102a68"/><text x="684" y="193" class="f meta" fill="#ac9bff">REMINDER</text><text x="684" y="214" class="f copy" fill="#d1e2f6">Follow-up terjadwal</text>
+</svg>

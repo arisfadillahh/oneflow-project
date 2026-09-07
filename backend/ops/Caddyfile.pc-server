@@ -1,0 +1,12 @@
+http://oneflow.id, http://www.oneflow.id, http://arisfadillahh.space, http://www.arisfadillahh.space {
+  encode zstd gzip
+
+  reverse_proxy /health app-backend:8080
+  reverse_proxy /healthz app-backend:8080
+  reverse_proxy /api/meta/webhook wa-gateway:8090
+  reverse_proxy /api/* app-backend:8080
+  reverse_proxy /ws app-backend:8080
+  reverse_proxy /ws/* app-backend:8080
+
+  respond "oneflow backend edge" 404
+}

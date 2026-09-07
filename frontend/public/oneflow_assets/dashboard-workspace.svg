@@ -1,0 +1,167 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1320 820" role="img" aria-labelledby="title desc">
+  <title id="title">Oneflow.id Conversation Inbox mockup</title>
+  <desc id="desc">Ilustrasi ringkas dashboard Oneflow.id dengan navigasi operasional, daftar percakapan WhatsApp, chat yang ditangani AI CS, detail status, aksi handoff, dan alat bisnis.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" x2="1" y1="0" y2="1">
+      <stop stop-color="#f5fbff"/>
+      <stop offset="1" stop-color="#dff1ff"/>
+    </linearGradient>
+    <linearGradient id="brand" x1="0" x2="1" y1="0" y2="1">
+      <stop stop-color="#21b7ff"/>
+      <stop offset=".56" stop-color="#2196f3"/>
+      <stop offset="1" stop-color="#7c4dff"/>
+    </linearGradient>
+    <filter id="shadow" x="-15%" y="-15%" width="130%" height="145%">
+      <feDropShadow dx="0" dy="20" stdDeviation="18" flood-color="#123c80" flood-opacity=".13"/>
+    </filter>
+    <style>
+      .f{font-family:Inter,"Segoe UI",Arial,sans-serif}
+      .brand{font-size:22px;font-weight:760;fill:#091d49}
+      .title{font-size:18px;font-weight:750;fill:#091d49}
+      .head{font-size:14px;font-weight:720;fill:#091d49}
+      .label{font-size:11px;font-weight:700;fill:#112a58}
+      .copy{font-size:10px;font-weight:500;fill:#60758f}
+      .meta{font-size:9px;font-weight:750;letter-spacing:.45px;fill:#617690}
+      .badge{font-size:8.5px;font-weight:720;letter-spacing:.25px}
+      .white{fill:#fff}
+      .nav{font-size:11px;font-weight:650;fill:#526a87}
+      .nav-active{font-size:11px;font-weight:720;fill:#087bd8}
+    </style>
+  </defs>
+  <rect width="1320" height="820" rx="42" fill="url(#bg)"/>
+  <g filter="url(#shadow)" transform="translate(38 40)">
+    <rect width="1244" height="740" rx="34" fill="#fff" stroke="#d7e8f7" stroke-width="2"/>
+    <path d="M0 68h1244" stroke="#e1edf8" stroke-width="2"/>
+    <circle cx="29" cy="34" r="8" fill="#7c4dff"/>
+    <circle cx="52" cy="34" r="8" fill="#21b7ff"/>
+    <circle cx="75" cy="34" r="8" fill="#dae7f5"/>
+    <text x="101" y="41" class="f brand">Oneflow.id</text>
+    <rect x="1036" y="18" width="170" height="32" rx="16" fill="#effbf6"/>
+    <circle cx="1056" cy="34" r="7" fill="#20c56b"/>
+    <text x="1072" y="38" class="f meta" fill="#087840">WHATSAPP CONNECTED</text>
+
+    <g transform="translate(26 95)">
+      <rect width="178" height="610" rx="22" fill="#f8fbff" stroke="#e1ecf7"/>
+      <rect x="18" y="22" width="142" height="37" rx="13" fill="#eaf4ff"/>
+      <rect x="29" y="33" width="15" height="15" rx="4" fill="#2196f3"/>
+      <text x="56" y="47" class="f nav-active">Inbox</text>
+      <text x="30" y="87" class="f nav">AI CS</text>
+      <text x="30" y="119" class="f nav">Kontak</text>
+      <text x="30" y="151" class="f nav">WhatsApp</text>
+      <text x="30" y="183" class="f nav">Alat Bisnis</text>
+      <path d="M18 211h142" stroke="#e1ecf7"/>
+      <text x="30" y="242" class="f meta">TOOLS</text>
+      <text x="30" y="274" class="f nav">Follow-up</text>
+      <text x="30" y="306" class="f nav">Produk &amp; Stok</text>
+      <text x="30" y="338" class="f nav">Pesanan</text>
+      <text x="30" y="370" class="f nav">Booking</text>
+      <rect x="18" y="516" width="142" height="69" rx="14" fill="#071c4d"/>
+      <text x="32" y="541" class="f meta white">AI CS</text>
+      <circle cx="34" cy="560" r="6" fill="#20c56b"/>
+      <text x="48" y="564" class="f label white">Aktif</text>
+    </g>
+
+    <g transform="translate(220 95)">
+      <rect width="258" height="610" rx="22" fill="#fff" stroke="#dce9f6"/>
+      <text x="20" y="35" class="f title">Inbox</text>
+      <text x="20" y="56" class="f copy">Percakapan WhatsApp masuk</text>
+      <rect x="20" y="76" width="218" height="38" rx="12" fill="#f8fbff" stroke="#e1ecf7"/>
+      <circle cx="37" cy="95" r="6" fill="none" stroke="#9cb2c9" stroke-width="2"/>
+      <path d="M42 100l5 5" stroke="#9cb2c9" stroke-width="2" stroke-linecap="round"/>
+      <text x="56" y="99" class="f copy">Cari kontak...</text>
+      <rect x="20" y="126" width="43" height="26" rx="13" fill="#eaf4ff"/>
+      <text x="35" y="143" class="f meta" fill="#087bd8">ALL</text>
+      <rect x="69" y="126" width="40" height="26" rx="13" fill="#2196f3"/>
+      <text x="83" y="143" class="f meta white">AI</text>
+      <rect x="115" y="126" width="56" height="26" rx="13" fill="#f3f7fb"/>
+      <text x="129" y="143" class="f meta">HUMAN</text>
+      <rect x="177" y="126" width="61" height="26" rx="13" fill="#fff4e8"/>
+      <text x="207.5" y="142.5" text-anchor="middle" class="f badge" fill="#bd6012">PENDING</text>
+      <rect x="14" y="169" width="230" height="93" rx="16" fill="#edf6ff" stroke="#cfe4fa"/>
+      <rect x="14" y="169" width="4" height="93" rx="2" fill="#2196f3"/>
+      <circle cx="42" cy="198" r="15" fill="#21b7ff"/>
+      <path d="M36 193h11a6 6 0 0 1 6 6v3a6 6 0 0 1-6 6h-5l-6 4 2-5a6 6 0 0 1-5-5v-3a6 6 0 0 1 3-6z" fill="#fff"/>
+      <text x="67" y="193" class="f head">Customer baru</text>
+      <text x="67" y="214" class="f copy">Mau order hari ini?</text>
+      <rect x="67" y="226" width="52" height="20" rx="10" fill="#e1f0ff"/>
+      <text x="81" y="240" class="f meta" fill="#087bd8">AI</text>
+      <text x="202" y="193" class="f meta">10:24</text>
+      <rect x="20" y="278" width="218" height="79" rx="15" fill="#fff" stroke="#e1ecf7"/>
+      <circle cx="42" cy="309" r="15" fill="#f2efff"/>
+      <text x="37" y="313" class="f meta" fill="#7c4dff">BK</text>
+      <text x="67" y="305" class="f head">Jadwal booking</text>
+      <text x="67" y="325" class="f copy">Perlu konfirmasi admin</text>
+      <rect x="67" y="332" width="68" height="20" rx="10" fill="#fff4e8"/>
+      <text x="101" y="345.5" text-anchor="middle" class="f badge" fill="#bd6012">PENDING</text>
+      <rect x="20" y="373" width="218" height="79" rx="15" fill="#fff" stroke="#e1ecf7"/>
+      <circle cx="42" cy="404" r="15" fill="#effbf6"/>
+      <text x="36" y="408" class="f meta" fill="#087840">PS</text>
+      <text x="67" y="400" class="f head">Pesanan baru</text>
+      <text x="67" y="420" class="f copy">Draft menunggu cek</text>
+      <rect x="174" y="419" width="50" height="20" rx="10" fill="#effbf6"/>
+      <text x="184" y="433" class="f meta" fill="#087840">HUMAN</text>
+    </g>
+
+    <g transform="translate(494 95)">
+      <rect width="416" height="610" rx="22" fill="#fff" stroke="#dce9f6"/>
+      <path d="M0 66h416" stroke="#e1ecf7"/>
+      <text x="22" y="31" class="f title">Percakapan aktif</text>
+      <text x="22" y="51" class="f copy">Customer baru - WhatsApp</text>
+      <rect x="342" y="22" width="51" height="24" rx="12" fill="#eaf4ff"/>
+      <text x="360" y="38" class="f meta" fill="#087bd8">AI</text>
+      <rect x="22" y="93" width="203" height="59" rx="14" fill="#f8fbff" stroke="#e1ecf7"/>
+      <text x="39" y="116" class="f label">Mau order hari ini?</text>
+      <text x="39" y="135" class="f copy">10:24 WIB</text>
+      <rect x="112" y="175" width="282" height="78" rx="16" fill="#eaf7ff" stroke="#cfe4fa"/>
+      <rect x="130" y="187" width="96" height="22" rx="11" fill="url(#brand)"/>
+      <text x="178" y="202.5" text-anchor="middle" class="f badge white">AI ASSISTANT</text>
+      <text x="130" y="226" class="f label">Produk tersedia. Saya siapkan</text>
+      <text x="130" y="243" class="f label">draft pesanan sekarang.</text>
+      <rect x="86" y="277" width="244" height="33" rx="16.5" fill="#effbf6"/>
+      <circle cx="107" cy="293.5" r="6" fill="#20c56b"/>
+      <text x="121" y="297" class="f meta" fill="#087840">DRAFT PESANAN DIBUAT</text>
+      <rect x="22" y="335" width="215" height="58" rx="14" fill="#f8fbff" stroke="#e1ecf7"/>
+      <text x="39" y="358" class="f label">Kirimkan totalnya ya.</text>
+      <text x="39" y="377" class="f copy">10:25 WIB</text>
+      <rect x="134" y="416" width="260" height="62" rx="15" fill="#edf6ff" stroke="#cfe4fa"/>
+      <text x="153" y="440" class="f label">Siap, pesanan menunggu</text>
+      <text x="153" y="458" class="f label">konfirmasi admin.</text>
+      <rect x="20" y="537" width="375" height="44" rx="14" fill="#f8fbff" stroke="#e1ecf7"/>
+      <text x="40" y="564" class="f copy">Ketik pesan...</text>
+      <circle cx="370" cy="559" r="15" fill="#2196f3"/>
+      <path d="M364 559h12M370 553v12" stroke="#fff" stroke-width="2" stroke-linecap="round"/>
+    </g>
+
+    <g transform="translate(926 95)">
+      <rect width="290" height="610" rx="22" fill="#fff" stroke="#dce9f6"/>
+      <text x="22" y="35" class="f title">Detail</text>
+      <text x="22" y="56" class="f copy">Status percakapan</text>
+      <rect x="20" y="79" width="250" height="100" rx="16" fill="#f8fbff" stroke="#e1ecf7"/>
+      <text x="37" y="105" class="f meta">MODE SAAT INI</text>
+      <rect x="166" y="91" width="69" height="25" rx="12.5" fill="#eaf4ff"/>
+      <text x="192" y="108" class="f meta" fill="#087bd8">AI</text>
+      <text x="37" y="138" class="f meta">STATUS</text>
+      <rect x="166" y="124" width="69" height="25" rx="12.5" fill="#effbf6"/>
+      <text x="181" y="141" class="f meta" fill="#087840">ACTIVE</text>
+      <rect x="20" y="195" width="119" height="38" rx="13" fill="url(#brand)"/>
+      <text x="51" y="219" class="f label white">Take Over</text>
+      <rect x="149" y="195" width="121" height="38" rx="13" fill="#fff" stroke="#d4e4f3"/>
+      <text x="174" y="219" class="f label">Return to AI</text>
+      <text x="22" y="272" class="f meta">ALAT BISNIS</text>
+      <rect x="20" y="292" width="250" height="64" rx="15" fill="#edf6ff" stroke="#cfe4fa"/>
+      <circle cx="43" cy="324" r="11" fill="#2196f3"/>
+      <text x="62" y="318" class="f label">Produk &amp; Stok</text>
+      <text x="62" y="338" class="f copy">Mode AI aktif</text>
+      <rect x="20" y="370" width="250" height="64" rx="15" fill="#effbf6" stroke="#cceede"/>
+      <circle cx="43" cy="402" r="11" fill="#20c56b"/>
+      <text x="62" y="396" class="f label">Pesanan</text>
+      <text x="62" y="416" class="f copy">Draft menunggu konfirmasi</text>
+      <rect x="20" y="448" width="118" height="60" rx="15" fill="#f4efff"/>
+      <text x="36" y="472" class="f label">Follow-up</text>
+      <text x="36" y="490" class="f copy">Aktif</text>
+      <rect x="150" y="448" width="120" height="60" rx="15" fill="#fff4e8"/>
+      <text x="166" y="472" class="f label">Booking</text>
+      <text x="166" y="490" class="f copy">Siap</text>
+    </g>
+  </g>
+</svg>

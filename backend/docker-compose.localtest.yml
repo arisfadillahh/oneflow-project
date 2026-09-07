@@ -1,0 +1,9 @@
+services:
+  app-backend:
+    environment:
+      APP_ENV: development
+
+  wa-gateway:
+    environment:
+      APP_ENV: development
+      WA_ENV: development

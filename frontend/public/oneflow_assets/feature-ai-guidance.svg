@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 520 310" role="img" aria-labelledby="title desc">
+  <title id="title">Inbox WhatsApp dengan AI guardrail</title>
+  <desc id="desc">A simple workflow from incoming chat to a knowledge-based AI reply and optional admin handoff.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" x2="1" y1="0" y2="1"><stop stop-color="#f8fbff"/><stop offset="1" stop-color="#eaf4ff"/></linearGradient>
+    <linearGradient id="accent" x1="0" x2="1"><stop stop-color="#23b8ff"/><stop offset="1" stop-color="#2765ea"/></linearGradient>
+    <style>.f{font-family:Inter,"Segoe UI",Arial,sans-serif}.head{font-size:15px;font-weight:750;fill:#071c4d}.label{font-size:12px;font-weight:700;fill:#132d59}.copy{font-size:11px;font-weight:500;fill:#60748e}.meta{font-size:9px;font-weight:750;letter-spacing:.48px;fill:#61758e}</style>
+  </defs>
+  <rect width="520" height="310" rx="27" fill="url(#bg)"/>
+  <rect x="18" y="18" width="484" height="274" rx="20" fill="#fff" stroke="#dce9f6"/>
+  <text x="37" y="48" class="f head">WhatsApp Inbox</text>
+  <rect x="382" y="32" width="94" height="22" rx="11" fill="#e8f8f0"/><circle cx="398" cy="43" r="5" fill="#22c55e"/><text x="409" y="46" class="f meta" fill="#087840">AKTIF</text>
+  <rect x="37" y="75" width="446" height="56" rx="14" fill="#effbf6" stroke="#cceede"/><circle cx="63" cy="103" r="13" fill="#20c56b"/><text x="89" y="96" class="f meta" fill="#087840">CHAT MASUK</text><text x="89" y="116" class="f label">Pertanyaan layanan baru</text>
+  <path d="M258 146v10" stroke="#b7d9f4" stroke-width="2"/>
+  <rect x="37" y="158" width="279" height="65" rx="14" fill="#edf6ff" stroke="#cfe4fa"/><rect x="53" y="174" width="96" height="19" rx="9.5" fill="url(#accent)"/><text x="67" y="187" class="f meta" fill="#fff">AI REPLY</text><text x="53" y="208" class="f copy">Jawaban dari knowledge valid</text>
+  <rect x="332" y="158" width="151" height="65" rx="14" fill="#fff7ed" stroke="#fed8b2"/><text x="348" y="184" class="f meta" fill="#be6214">HANDOFF</text><text x="348" y="205" class="f copy">Bila perlu</text>
+  <rect x="37" y="244" width="446" height="29" rx="14.5" fill="#f5f9fd"/><circle cx="57" cy="258.5" r="5" fill="#2388ed"/><text x="72" y="262" class="f meta">KNOWLEDGE TERVALIDASI</text><circle cx="293" cy="258.5" r="5" fill="#7c4dff"/><text x="308" y="262" class="f meta">ADMIN TETAP KONTROL</text>
+</svg>

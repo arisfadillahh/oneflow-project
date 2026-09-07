@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 440 310" role="img" aria-labelledby="title desc">
+  <title id="title">Jawaban AI dari knowledge bisnis</title>
+  <desc id="desc">Jawaban customer disusun AI dan dapat diteruskan ke admin saat diperlukan.</desc>
+  <defs>
+    <linearGradient id="reply" x1="0" x2="1"><stop stop-color="#2196f3"/><stop offset="1" stop-color="#7c4dff"/></linearGradient>
+    <style>
+      .f{font-family:Poppins,Inter,"Segoe UI",Arial,sans-serif}
+      .title{font-size:16px;font-weight:700;fill:#fff}
+      .copy{font-size:13px;font-weight:500;fill:#c7d7ee}
+      .tag{font-size:11px;font-weight:700;fill:#7fd0ff;letter-spacing:.7px}
+      .typing{animation:pulse 1.45s ease-in-out infinite}
+      .d2{animation-delay:.2s}.d3{animation-delay:.4s}
+      @keyframes pulse{0%,100%{opacity:.32}45%{opacity:1}}
+      @media(prefers-reduced-motion:reduce){.typing{animation:none;opacity:1}}
+    </style>
+  </defs>
+  <text x="12" y="21" class="f tag">LIVE CONVERSATION</text>
+  <rect x="12" y="39" width="318" height="66" rx="18" fill="#10295a" stroke="#28437a"/>
+  <text x="32" y="67" class="f title">Customer</text>
+  <text x="32" y="88" class="f copy">Bisa kirim hari ini?</text>
+  <rect x="76" y="122" width="352" height="100" rx="20" fill="url(#reply)"/>
+  <rect x="95" y="140" width="80" height="21" rx="10.5" fill="#ffffff" fill-opacity=".17"/>
+  <text x="112" y="155" class="f tag" fill="#fff">AI CS</text>
+  <text x="95" y="184" class="f title">Bisa, stok tersedia.</text>
+  <text x="95" y="204" class="f copy" fill="#eef6ff">Pesanan diproses hari ini.</text>
+  <rect x="12" y="242" width="212" height="50" rx="17" fill="#10295a" stroke="#29457f"/>
+  <circle cx="39" cy="267" r="8" fill="#25d366"/>
+  <text x="58" y="272" class="f copy" fill="#e8f3ff">Knowledge tervalidasi</text>
+  <rect x="237" y="242" width="191" height="50" rx="17" fill="#10295a" stroke="#29457f"/>
+  <circle class="typing" cx="266" cy="267" r="4" fill="#7fd0ff"/>
+  <circle class="typing d2" cx="278" cy="267" r="4" fill="#7fd0ff"/>
+  <circle class="typing d3" cx="290" cy="267" r="4" fill="#7fd0ff"/>
+  <text x="306" y="272" class="f copy" fill="#e8f3ff">Siap kirim</text>
+</svg>

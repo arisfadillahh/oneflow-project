@@ -1,0 +1,110 @@
+name: oneflow
+
+services:
+  postgres:
+    image: pgvector/pgvector:pg16
+    container_name: oneflow-postgres
+    restart: unless-stopped
+    env_file:
+      - .env.prod.infra
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 20
+
+  redis:
+    image: redis:7-alpine
+    container_name: oneflow-redis
+    restart: unless-stopped
+    command: ["redis-server", "--appendonly", "yes"]
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 20
+
+  minio:
+    image: minio/minio:latest
+    container_name: oneflow-minio
+    restart: unless-stopped
+    command: server /data --console-address ":9001"
+    env_file:
+      - .env.prod.infra
+    volumes:
+      - minio_data:/data
+
+  app-backend:
+    build:
+      context: .
+      dockerfile: ./apps/app-backend/Dockerfile
+    container_name: oneflow-app-backend
+    restart: unless-stopped
+    env_file:
+      - .env.prod.app-backend
+    ports:
+      - "127.0.0.1:8080:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      minio:
+        condition: service_started
+
+  ai-service:
+    build:
+      context: .
+      dockerfile: ./apps/ai-service/Dockerfile
+    container_name: oneflow-ai-service
+    restart: unless-stopped
+    env_file:
+      - .env.prod.ai-service
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  wa-gateway:
+    build:
+      context: .
+      dockerfile: ./apps/wa-gateway/Dockerfile
+    container_name: oneflow-wa-gateway
+    restart: unless-stopped
+    env_file:
+      - .env.prod.wa-gateway
+    ports:
+      - "127.0.0.1:8090:8090"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      app-backend:
+        condition: service_started
+
+  worker:
+    build:
+      context: .
+      dockerfile: ./apps/worker/Dockerfile
+    container_name: oneflow-worker
+    restart: unless-stopped
+    env_file:
+      - .env.prod.worker
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      minio:
+        condition: service_started
+
+volumes:
+  postgres_data:
+  redis_data:
+  minio_data:

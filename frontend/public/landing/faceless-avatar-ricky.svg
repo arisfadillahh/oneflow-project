@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="96" height="96" viewBox="0 0 96 96" role="img" aria-label="Faceless testimonial avatar">
+  <rect width="96" height="96" rx="24" fill="#f0fdf4"/>
+  <circle cx="48" cy="47" r="34" fill="#dcfce7"/>
+  <path d="M24 82c3.8-17.8 14.4-26.7 24-26.7S68.2 64.2 72 82H24Z" fill="#20b15a"/>
+  <circle cx="48" cy="32" r="18" fill="#bd7b54"/>
+  <path d="M30 26c4-12.1 13.4-17.2 25.8-14.1 7.9 2 12.3 7.1 13.2 15.4-6.6.2-12.7-2.2-18.4-7.4-4.5 4.2-11.4 6.2-20.6 6.1Z" fill="#1f2937"/>
+  <path d="M41 39.5c4.6 3.4 9.3 3.4 14 0" fill="none" stroke="#6f3f2a" stroke-width="3" stroke-linecap="round"/>
+  <path d="M37 58h22l5 24H32l5-24Z" fill="#0f8b4c" opacity=".42"/>
+</svg>

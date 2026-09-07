@@ -1,0 +1,64 @@
+name: Backend CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  backend:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: pgvector/pgvector:pg16
+        env:
+          POSTGRES_DB: oneflow_test
+          POSTGRES_USER: oneflow_test
+          POSTGRES_PASSWORD: local-ci-only
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U oneflow_test -d oneflow_test"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 12
+    env:
+      APP_BACKEND_TEST_DSN: postgres://oneflow_test:local-ci-only@127.0.0.1:5432/oneflow_test?sslmode=disable
+      APP_BACKEND_REQUIRE_DB_TESTS: "true"
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version: "1.25.x"
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Verify backend standalone split
+        run: node scripts/verify-backend-standalone.mjs
+
+      - name: Prepare isolated test database
+        working-directory: apps/app-backend
+        run: go run ./cmd/testdb
+
+      - name: Test app backend
+        working-directory: apps/app-backend
+        run: go test -count=1 ./...
+
+      - name: Test WhatsApp gateway
+        working-directory: apps/wa-gateway
+        run: go test ./...
+
+      - name: Compile Python services
+        run: |
+          python -m py_compile apps/ai-service/app/main.py
+          python -m py_compile apps/worker/app/main.py
+
+      - name: Install AI test dependencies
+        run: python -m pip install -r apps/ai-service/requirements.txt
+
+      - name: Test offline AI persona behavior
+        run: python apps/ai-service/tests/test_response_persona.py

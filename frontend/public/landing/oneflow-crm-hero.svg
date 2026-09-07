@@ -1,0 +1,71 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 900" role="img" aria-label="Oneflow.id CRM dashboard preview">
+  <defs>
+    <linearGradient id="hero-blue" x1="505" y1="122" x2="1395" y2="742" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#1494ff"/>
+      <stop offset="1" stop-color="#6f48ff"/>
+    </linearGradient>
+    <filter id="hero-shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="28" stdDeviation="32" flood-color="#0c234f" flood-opacity=".12"/>
+    </filter>
+  </defs>
+  <rect width="1600" height="900" fill="#fff"/>
+  <ellipse cx="990" cy="440" rx="535" ry="380" fill="#ebf3fb"/>
+  <rect x="430" y="116" width="980" height="640" rx="34" fill="#fff" stroke="#cde1ff" stroke-width="2" filter="url(#hero-shadow)"/>
+  <rect x="430" y="116" width="980" height="78" rx="34" fill="#f4f9ff"/>
+  <circle cx="474" cy="154" r="12" fill="#8ac7f6"/>
+  <circle cx="504" cy="154" r="12" fill="#c8a7ff"/>
+  <circle cx="534" cy="154" r="12" fill="#c9d3e2"/>
+  <g transform="translate(616 134) scale(.42)">
+    <path d="M102 0c56.33 0 102 45.67 102 102s-45.67 102-102 102S0 158.33 0 102 45.67 0 102 0Zm0 35c-37 0-67 30-67 67s30 67 67 67 67-30 67-67-30-67-67-67Z" fill="url(#hero-blue)"/>
+    <path d="M58 106h47c12.7 0 23-10.3 23-23s10.3-23 23-23h23" fill="none" stroke="#08234a" stroke-width="19" stroke-linecap="round"/>
+    <circle cx="73" cy="102" r="19" fill="#fff"/>
+    <circle cx="129" cy="102" r="19" fill="#fff"/>
+  </g>
+  <text x="718" y="166" font-family="Inter, Poppins, Arial, sans-serif" font-size="32" font-weight="800" fill="#08234a">Oneflow<tspan fill="#286dff">.id</tspan></text>
+  <text x="1165" y="164" font-family="Inter, Arial, sans-serif" font-size="24" font-weight="800" fill="#65789c">CRM hari ini</text>
+  <rect x="488" y="268" width="295" height="430" rx="24" fill="#fff" stroke="#cde1ff" stroke-width="2"/>
+  <rect x="518" y="304" width="142" height="40" rx="13" fill="#edf4fc"/>
+  <text x="542" y="331" font-family="Inter, Arial, sans-serif" font-size="18" font-weight="800" fill="#10234c">Inbox</text>
+  <rect x="518" y="382" width="220" height="78" rx="16" fill="#e8eff7"/>
+  <text x="542" y="412" font-family="Inter, Arial, sans-serif" font-size="20" font-weight="800" fill="#10234c">Customer baru</text>
+  <text x="542" y="439" font-family="Inter, Arial, sans-serif" font-size="16" font-weight="500" fill="#64779b">Tanya paket Growth</text>
+  <rect x="578" y="486" width="214" height="72" rx="17" fill="url(#hero-blue)"/>
+  <text x="604" y="521" font-family="Inter, Arial, sans-serif" font-size="21" font-weight="800" fill="#fff">AI siap bantu</text>
+  <text x="604" y="548" font-family="Inter, Arial, sans-serif" font-size="16" font-weight="500" fill="#dfeaff">Brief dan follow-up</text>
+  <rect x="518" y="600" width="253" height="68" rx="16" fill="#fff" stroke="#cde1ff" stroke-width="2"/>
+  <text x="542" y="631" font-family="Inter, Arial, sans-serif" font-size="18" font-weight="800" fill="#10234c">Buat deal</text>
+  <text x="542" y="656" font-family="Inter, Arial, sans-serif" font-size="14" fill="#64779b">Proposal, owner, next follow-up</text>
+  <rect x="830" y="268" width="410" height="430" rx="24" fill="#fff" stroke="#cde1ff" stroke-width="2"/>
+  <text x="865" y="318" font-family="Inter, Arial, sans-serif" font-size="32" font-weight="850" fill="#10234c">Pipeline sales</text>
+  <text x="865" y="351" font-family="Inter, Arial, sans-serif" font-size="18" font-weight="500" fill="#64779b">Deal, reminder, dan owner nyambung.</text>
+  <g transform="translate(865 404)">
+    <rect width="116" height="255" rx="16" fill="#f3f8fd" stroke="#d7e8fb"/>
+    <rect x="22" y="28" width="70" height="28" rx="12" fill="#e7eff8"/>
+    <text x="39" y="48" font-family="Inter, Arial, sans-serif" font-size="13" font-weight="800" fill="#10234c">Lead</text>
+    <rect x="24" y="94" width="68" height="78" rx="12" fill="#fff" stroke="#d7e8fb"/>
+    <rect x="39" y="116" width="46" height="8" rx="4" fill="#7dbcf0"/>
+    <rect x="39" y="138" width="34" height="8" rx="4" fill="#d5e4f3"/>
+  </g>
+  <g transform="translate(1005 404)">
+    <rect width="116" height="255" rx="16" fill="#f3f8fd" stroke="#d7e8fb"/>
+    <rect x="22" y="28" width="74" height="28" rx="12" fill="#e7eff8"/>
+    <text x="36" y="48" font-family="Inter, Arial, sans-serif" font-size="13" font-weight="800" fill="#10234c">Proposal</text>
+    <rect x="24" y="94" width="68" height="78" rx="12" fill="#fff" stroke="#d7e8fb"/>
+    <rect x="39" y="116" width="46" height="8" rx="4" fill="#9c76f1"/>
+    <rect x="39" y="138" width="34" height="8" rx="4" fill="#d5e4f3"/>
+    <rect x="24" y="188" width="68" height="52" rx="12" fill="#fff" stroke="#d7e8fb"/>
+    <rect x="39" y="211" width="38" height="7" rx="4" fill="#7dbcf0"/>
+  </g>
+  <g transform="translate(1145 404)">
+    <rect width="116" height="255" rx="16" fill="#f3f8fd" stroke="#d7e8fb"/>
+    <rect x="22" y="28" width="70" height="28" rx="12" fill="#e7eff8"/>
+    <text x="41" y="48" font-family="Inter, Arial, sans-serif" font-size="13" font-weight="800" fill="#10234c">Won</text>
+    <rect x="24" y="94" width="68" height="78" rx="12" fill="url(#hero-blue)"/>
+    <rect x="39" y="116" width="46" height="8" rx="4" fill="#fff"/>
+    <rect x="39" y="138" width="34" height="8" rx="4" fill="#abd1ff"/>
+  </g>
+  <rect x="980" y="676" width="260" height="88" rx="18" fill="#fff" stroke="#cde1ff" filter="url(#hero-shadow)"/>
+  <text x="1011" y="713" font-family="Inter, Arial, sans-serif" font-size="15" font-weight="800" fill="#64779b">Forecast bulan ini</text>
+  <text x="1011" y="746" font-family="Inter, Arial, sans-serif" font-size="32" font-weight="850" fill="#10234c">Rp128 juta</text>
+  <path d="M1174 724l28-28 28 18" fill="none" stroke="#2395f2" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

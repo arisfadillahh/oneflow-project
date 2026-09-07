@@ -1,0 +1,78 @@
+{
+  "golden": [
+    {
+      "id": "onboarding_01",
+      "message": "cara mulai pakai layanan gimana?",
+      "expected_kind": "faq",
+      "must_include_any": ["website resmi", "data kontak", "submit"]
+    },
+    {
+      "id": "onboarding_02",
+      "message": "mau daftar layanan lewat mana kak?",
+      "expected_kind": "faq",
+      "must_include_any": ["website resmi", "pendaftaran", "data"]
+    },
+    {
+      "id": "onboarding_03",
+      "message": "kalau mau mulai layanan dari mana?",
+      "expected_kind": "faq",
+      "must_include_any": ["data pribadi", "layanan"]
+    },
+    {
+      "id": "placement_01",
+      "message": "penempatannya bakal ngikut domisili aku ga?",
+      "expected_kind": "faq",
+      "must_include_any": ["domisili", "kebutuhan", "preferensi lokasi"]
+    },
+    {
+      "id": "service_flow_01",
+      "message": "alur proses layanannya sampai selesai apa aja?",
+      "expected_kind": "faq",
+      "must_include_any": ["pendaftaran", "verifikasi", "konfirmasi"]
+    },
+    {
+      "id": "available_services_01",
+      "message": "layanan apa aja yang available sekarang?",
+      "expected_kind": ["faq", "position"],
+      "must_include_any": ["Support", "Konsultasi", "Operasional"]
+    }
+  ],
+  "extra": [
+    {
+      "id": "onboarding_extra_01",
+      "message": "daftarnya online atau harus datang langsung?",
+      "expected_kind": "faq",
+      "must_include_any": ["online", "website"]
+    },
+    {
+      "id": "onboarding_extra_02",
+      "message": "link resmi buat isi permintaan layanan yang mana ya?",
+      "expected_kind": "faq",
+      "must_include_any": ["website resmi"]
+    },
+    {
+      "id": "relationship_extra_01",
+      "message": "kalau akun saya dipakai tim boleh tetap lanjut?",
+      "expected_kind": "faq",
+      "must_include_any": ["kebijakan", "tidak diperkenankan", "akun"]
+    },
+    {
+      "id": "ender_extra_01",
+      "message": "sip makasih kak",
+      "expected_kind": "faq",
+      "must_include_any": ["Terima kasih", "Semoga sukses", "pesan otomatis"]
+    },
+    {
+      "id": "personal_status_extra_01",
+      "message": "status permintaan saya sudah sampai mana?",
+      "expected_decision": "escalate",
+      "must_include_any": ["personal_data_requires_human_or_conversation_memory", "factual verification"]
+    },
+    {
+      "id": "insufficient_source_extra_01",
+      "message": "apakah bintang pelajar punya kantor di bulan?",
+      "expected_decision": "escalate",
+      "must_include_any": ["No approved knowledge source", "verification"]
+    }
+  ]
+}

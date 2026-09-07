@@ -1,0 +1,198 @@
+name: oneflow
+
+services:
+  postgres:
+    image: pgvector/pgvector:pg16
+    container_name: oneflow-postgres
+    environment:
+      POSTGRES_DB: oneflow
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: c2f33f0deccfebbd577530ed258f9f63a9220961582af633a9e250c547e8740a
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d oneflow"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  redis:
+    image: redis:7
+    container_name: oneflow-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  minio:
+    image: minio/minio:latest
+    container_name: oneflow-minio
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: d9ada194a53defb5dad138d2f5862574
+      MINIO_ROOT_PASSWORD: bBEUD2kIlfchOjz/9p5FWdXxcPCJU2fVl0eb5eZEWQ0=
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    volumes:
+      - minio_data:/data
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://127.0.0.1:9000/minio/health/live"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+
+  app-backend:
+    build:
+      context: .
+      dockerfile: ./apps/app-backend/Dockerfile
+    container_name: oneflow-app-backend
+    env_file:
+      - .env.app-backend
+    ports:
+      - "8080:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      minio:
+        condition: service_started
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://127.0.0.1:8080/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 10s
+
+  ai-service:
+    build:
+      context: .
+      dockerfile: ./apps/ai-service/Dockerfile
+    container_name: oneflow-ai-service
+    env_file:
+      - .env.ai-service
+    ports:
+      - "8000:8000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  wa-gateway:
+    build:
+      context: .
+      dockerfile: ./apps/wa-gateway/Dockerfile
+    container_name: oneflow-wa-gateway
+    env_file:
+      - .env.wa-gateway
+    ports:
+      - "8090:8090"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      app-backend:
+        condition: service_started
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://127.0.0.1:8090/healthz"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 10s
+
+  worker:
+    build:
+      context: .
+      dockerfile: ./apps/worker/Dockerfile
+    container_name: oneflow-worker
+    env_file:
+      - .env.worker
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      minio:
+        condition: service_started
+
+  postgres-backup:
+    image: postgres:16-alpine
+    container_name: oneflow-postgres-backup
+    restart: unless-stopped
+    environment:
+      PGHOST: postgres
+      PGPORT: "5432"
+      PGDATABASE: oneflow
+      PGUSER: postgres
+      PGPASSWORD: c2f33f0deccfebbd577530ed258f9f63a9220961582af633a9e250c547e8740a
+      BACKUP_RETENTION_DAYS: "14"
+    volumes:
+      - postgres_backups:/backups
+    depends_on:
+      postgres:
+        condition: service_healthy
+    command:
+      - sh
+      - -c
+      - |
+        set -eu
+        while true; do
+          stamp=$$(date -u +%Y%m%dT%H%M%SZ)
+          pg_dump -Fc > "/backups/oneflow_$${stamp}.dump"
+          find /backups -type f -name 'oneflow_*.dump' -mtime +"$${BACKUP_RETENTION_DAYS}" -delete
+          sleep 86400
+        done
+
+  production-monitor:
+    image: curlimages/curl:8.10.1
+    container_name: oneflow-production-monitor
+    restart: unless-stopped
+    environment:
+      MONITOR_WEBHOOK_URL: ${MONITOR_WEBHOOK_URL:-}
+      CHECK_INTERVAL_SECONDS: ${CHECK_INTERVAL_SECONDS:-60}
+    depends_on:
+      app-backend:
+        condition: service_healthy
+      wa-gateway:
+        condition: service_healthy
+      minio:
+        condition: service_healthy
+    command:
+      - sh
+      - -c
+      - |
+        set -eu
+        check() {
+          name="$$1"
+          url="$$2"
+          code="$$(curl -fsS -o /dev/null -w '%{http_code}' "$$url" || true)"
+          if [ "$$code" != "200" ]; then
+            msg="production-monitor: $$name unhealthy, status=$$code"
+            echo "$$(date -u +%Y-%m-%dT%H:%M:%SZ) $$msg"
+            if [ -n "$${MONITOR_WEBHOOK_URL}" ]; then
+              curl -fsS -X POST -H 'Content-Type: application/json' --data "{\"text\":\"$$msg\"}" "$${MONITOR_WEBHOOK_URL}" >/dev/null || true
+            fi
+          fi
+        }
+        while true; do
+          check app-backend http://app-backend:8080/health
+          check wa-gateway http://wa-gateway:8090/healthz
+          check minio http://minio:9000/minio/health/live
+          sleep "$${CHECK_INTERVAL_SECONDS}"
+        done
+
+volumes:
+  postgres_data:
+  redis_data:
+  minio_data:
+  postgres_backups:

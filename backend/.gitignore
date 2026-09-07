@@ -1,0 +1,69 @@
+# Dependencies
+node_modules/
+
+# Build output
+.next/
+dist/
+build/
+coverage/
+apps/dashboard-web/.next/
+
+# Python caches / venv
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.venv/
+.venv-native/
+venv/
+apps/ai-service/.venv/
+apps/worker/.venv/
+
+# Local env files
+.env
+.env.*
+!.env.*.example
+
+# Logs
+*.log
+*.err.log
+*.out.log
+
+# Temporary QA/output artifacts
+tmp/
+tmp-*/
+tmp-*
+tmp_*
+tmp_docx_build/
+test-results/
+apps/dashboard-web/test-results/
+backups/
+backup-*.sql
+check_pc.ps1
+scan_c.ps1
+
+# Local design drafts
+design/
+design v2/
+g/
+
+# Local assistant / AI workspace files
+Bagas's Workspace/
+.agents/
+.codex*
+.claude/
+.claude*
+.openai/
+openai/
+codex/
+claude/
+plugins/
+*CODEX*
+*Codex*
+*codex*
+*OpenAI*
+*openai*
+*Claude*
+*claude*
+!db/migrations/030_openrouter_gpt_claude_models.sql
+GEMINI.md
+skill.md

@@ -1,0 +1,54 @@
+{
+  "schemaVersion": 1,
+  "name": "oneflow-dashboard-api",
+  "owner": "apps/app-backend",
+  "consumer": "apps/dashboard-web",
+  "boundary": {
+    "browserMayCall": "app-backend only",
+    "browserMustNotCall": ["ai-service", "wa-gateway internal routes", "database", "worker"],
+    "aiRuntimeAccess": "app-backend owns calls to ai-service so tenant isolation, credit billing, ai_runs, and guardrails are preserved.",
+    "publicBaseRule": "Dashboard URLs must be relative or env-derived. Do not hardcode https://oneflow.id/dashboard in application navigation."
+  },
+  "environment": {
+    "NEXT_PUBLIC_API_BASE_URL": "Optional browser API base. Empty means same-origin proxy in production, localhost:8080 on local loopback.",
+    "NEXT_PUBLIC_WS_BASE_URL": "Optional browser WebSocket base. Empty means same-origin /ws in production, localhost:8080/ws on local loopback.",
+    "NEXT_PUBLIC_WA_GATEWAY_URL": "Optional legacy browser gateway base. Prefer app-backend APIs for new work.",
+    "API_PROXY_TARGET": "Server-side Next.js rewrite target for /api/* and /health."
+  },
+  "routeFamilies": [
+    { "id": "public-billing", "pathPattern": "^/api/public/billing(?:/.*)?$", "auth": "public-read", "notes": "Landing pricing catalog only." },
+    { "id": "auth", "pathPattern": "^/api/auth(?:/.*)?$", "auth": "public-login-register" },
+    { "id": "account", "pathPattern": "^/api/account(?:/.*)?$", "auth": "required" },
+    { "id": "organizations", "pathPattern": "^/api/organizations(?:/.*)?$", "auth": "required" },
+    { "id": "dashboard-summary", "pathPattern": "^/api/dashboard(?:/.*)?$", "auth": "required" },
+    { "id": "analytics", "pathPattern": "^/api/analytics(?:/.*)?$", "auth": "required" },
+    { "id": "team", "pathPattern": "^/api/team(?:/.*)?$", "auth": "required" },
+    { "id": "whatsapp", "pathPattern": "^/api/whatsapp(?:/.*)?$", "auth": "required", "notes": "Includes Meta Cloud onboarding/template operations through app-backend." },
+    { "id": "business-tools", "pathPattern": "^/api/business-tools(?:/.*)?$", "auth": "required" },
+    { "id": "commerce", "pathPattern": "^/api/commerce(?:/.*)?$", "auth": "required" },
+    { "id": "booking", "pathPattern": "^/api/booking(?:/.*)?$", "auth": "required" },
+    { "id": "deals", "pathPattern": "^/api/(?:deals|deal-activities|deal-pipelines|deal-stages)(?:/.*)?$", "auth": "required" },
+    { "id": "contacts", "pathPattern": "^/api/(?:contacts|contact-tags|follow-up-tasks|message-templates|broadcasts)(?:/.*)?$", "auth": "required" },
+    { "id": "conversations", "pathPattern": "^/api/(?:inbox|conversations)(?:/.*)?$", "auth": "required" },
+    { "id": "knowledge", "pathPattern": "^/api/(?:knowledge|job-positions)(?:/.*)?$", "auth": "required" },
+    { "id": "ai-config", "pathPattern": "^/api/(?:ai-models|ai-agents|ai-settings|ai-runs|agents)(?:/.*)?$", "auth": "required" },
+    { "id": "playground", "pathPattern": "^/api/playground(?:/.*)?$", "auth": "required", "notes": "Billed through app-backend, never direct browser-to-ai-service." },
+    { "id": "billing", "pathPattern": "^/api/billing(?:/.*)?$", "auth": "required" },
+    { "id": "tickets", "pathPattern": "^/api/tickets(?:/.*)?$", "auth": "required", "notes": "AI triage is billed by app-backend." },
+    { "id": "notifications", "pathPattern": "^/api/notifications(?:/.*)?$", "auth": "required" },
+    { "id": "group-notification-rules", "pathPattern": "^/api/group-notification-rules(?:/.*)?$", "auth": "required" },
+    { "id": "escalation-group", "pathPattern": "^/api/escalation-group(?:/.*)?$", "auth": "required" },
+    { "id": "system-health", "pathPattern": "^/api/system(?:/.*)?$", "auth": "owner-or-admin" },
+    { "id": "support", "pathPattern": "^/api/support(?:/.*)?$", "auth": "required" },
+    { "id": "dev-simulate", "pathPattern": "^/api/dev(?:/.*)?$", "auth": "local-dev-only" }
+  ],
+  "forbiddenBrowserPatterns": [
+    "NEXT_PUBLIC_AI_SERVICE_URL",
+    "ai-service:",
+    "localhost:8000",
+    "127.0.0.1:8000",
+    "/api/decide",
+    "/api/ticket-triage",
+    "https://oneflow.id/dashboard"
+  ]
+}

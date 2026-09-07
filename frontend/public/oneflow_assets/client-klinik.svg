@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 184 48" role="img" aria-label="Klinik">
+  <rect x="1" y="1" width="182" height="46" rx="23" fill="#fff" stroke="#d8e8fb" stroke-width="2"/>
+  <circle cx="27" cy="24" r="14" fill="#22c55e"/>
+  <path d="M24 16.5h6v5h5v6h-5v5h-6v-5h-5v-6h5z" fill="#fff"/>
+  <text x="51" y="29" font-family="Inter,Segoe UI,Arial,sans-serif" font-size="15" font-weight="700" fill="#0f172a">Klinik</text>
+</svg>

@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 520 510" role="img" aria-labelledby="title desc">
+  <title id="title">Otomasi plugin bisnis Oneflow</title>
+  <desc id="desc">Chat customer memicu pengecekan stok, booking, dan follow-up secara terhubung.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" x2="1" y1="0" y2="1">
+      <stop stop-color="#f7fbff"/>
+      <stop offset="1" stop-color="#edf6ff"/>
+    </linearGradient>
+    <linearGradient id="blue" x1="0" x2="1"><stop stop-color="#21b7ff"/><stop offset="1" stop-color="#087bd8"/></linearGradient>
+    <style>
+      .f{font-family:Poppins,Inter,"Segoe UI",Arial,sans-serif}
+      .title{font-size:18px;font-weight:700;fill:#071c4d}
+      .copy{font-size:13px;font-weight:500;fill:#51657d}
+      .tag{font-size:12px;font-weight:700;fill:#087bd8;letter-spacing:.7px}
+    </style>
+  </defs>
+  <rect width="520" height="510" rx="30" fill="url(#bg)"/>
+  <rect x="32" y="25" width="456" height="72" rx="20" fill="#fff" stroke="#deebf6"/>
+  <rect x="52" y="44" width="36" height="36" rx="11" fill="url(#blue)"/>
+  <path d="M63 62h14M70 55v14" stroke="#fff" stroke-width="3" stroke-linecap="round"/>
+  <text x="106" y="55" class="f tag">TRIGGER</text>
+  <text x="106" y="78" class="f title">Chat masuk dari customer</text>
+  <path d="M260 97v24M260 121H134v24M260 121h126v24" fill="none" stroke="#b8dfff" stroke-width="3" stroke-linecap="round"/>
+  <rect x="32" y="145" width="211" height="112" rx="20" fill="#fff" stroke="#dceaf6"/>
+  <circle cx="61" cy="179" r="14" fill="#25d366"/>
+  <path d="M55 179h12M61 173v12" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/>
+  <text x="86" y="177" class="f title">Stok</text>
+  <text x="53" y="213" class="f copy">Cek produk</text>
+  <rect x="53" y="226" width="96" height="12" rx="6" fill="#ddf7ea"/>
+  <rect x="277" y="145" width="211" height="112" rx="20" fill="#fff" stroke="#dceaf6"/>
+  <circle cx="306" cy="179" r="14" fill="#7c4dff"/>
+  <text x="331" y="177" class="f title">Booking</text>
+  <text x="298" y="213" class="f copy">Jadwal tersedia</text>
+  <rect x="298" y="226" width="112" height="12" rx="6" fill="#eee9ff"/>
+  <path d="M134 257v35h126M386 257v35H260M260 292v24" fill="none" stroke="#b8dfff" stroke-width="3" stroke-linecap="round"/>
+  <rect x="32" y="316" width="456" height="148" rx="24" fill="#071c4d"/>
+  <text x="57" y="352" class="f tag" fill="#8dd6ff">FOLLOW-UP PIPELINE</text>
+  <text x="57" y="383" class="f title" fill="#fff">Admin dapat tugas otomatis</text>
+  <rect x="57" y="405" width="284" height="12" rx="6" fill="#18346e"/>
+  <rect x="57" y="405" width="172" height="12" rx="6" fill="#2196f3"/>
+  <rect x="360" y="395" width="99" height="38" rx="19" fill="#132e62" stroke="#2c4b82"/>
+  <text x="380" y="419" class="f copy" fill="#d8e9fb">Terkirim</text>
+</svg>

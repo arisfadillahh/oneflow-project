@@ -1,0 +1,20 @@
+<svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g clip-path="url(#clip0_9706_461)">
+<mask id="mask0_9706_461" style="mask-type:luminance" maskUnits="userSpaceOnUse" x="0" y="0" width="20" height="20">
+<path d="M20 0H0V20H20V0Z" fill="white"/>
+</mask>
+<g mask="url(#mask0_9706_461)">
+<mask id="mask1_9706_461" style="mask-type:luminance" maskUnits="userSpaceOnUse" x="0" y="0" width="20" height="20">
+<path d="M20 0H0V20H20V0Z" fill="white"/>
+</mask>
+<g mask="url(#mask1_9706_461)">
+<path d="M4.54016 20V6.50603H0.252944V20H4.54016ZM2.3971 4.66256C3.89213 4.66256 4.82271 3.62638 4.82271 2.3315C4.79486 1.00742 3.89219 0 2.42548 0C0.958991 0 0 1.00744 0 2.3315C0 3.62644 0.930353 4.66256 2.36912 4.66256H2.3971ZM6.91312 20H11.2003V12.4643C11.2003 12.061 11.2282 11.6581 11.3414 11.3698C11.6513 10.564 12.3567 9.72949 13.5411 9.72949C15.0924 9.72949 15.7131 10.9669 15.7131 12.7809V19.9999H20V12.2626C20 8.11777 17.8849 6.18923 15.0642 6.18923C12.7514 6.18923 11.7359 7.54167 11.1718 8.46281H11.2004V6.50575H6.91321C6.96947 7.77195 6.91312 20 6.91312 20Z" fill="#1D1D1D"/>
+</g>
+</g>
+</g>
+<defs>
+<clipPath id="clip0_9706_461">
+<rect width="20" height="20" fill="white"/>
+</clipPath>
+</defs>
+</svg>

@@ -1,0 +1,14 @@
+**/node_modules
+**/.next
+**/.turbo
+**/.cache
+**/__pycache__
+**/.pytest_cache
+**/.venv
+**/venv
+*.log
+tmp-*.png
+tmp-*
+dashboard-*.log
+.git
+.gitignore

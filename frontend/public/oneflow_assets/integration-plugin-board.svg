@@ -1,0 +1,60 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1040 402" role="img" aria-labelledby="title desc">
+  <title id="title">Plugin bisnis Oneflow</title>
+  <desc id="desc">Lima plugin bisnis terhubung rapi ke Oneflow AI: follow-up, order, stok, booking, dan notifikasi admin.</desc>
+  <defs>
+    <linearGradient id="surface" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#ffffff"/><stop offset="1" stop-color="#f4f9ff"/></linearGradient>
+    <linearGradient id="brand" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#16b8ff"/><stop offset=".55" stop-color="#247ef2"/><stop offset="1" stop-color="#714cf4"/></linearGradient>
+    <filter id="shadow" x="-16%" y="-16%" width="132%" height="145%"><feDropShadow dx="0" dy="12" stdDeviation="13" flood-color="#11336d" flood-opacity=".08"/></filter>
+    <style>
+      .f{font-family:Inter,"Segoe UI",Arial,sans-serif}
+      .eyebrow{font-size:11px;font-weight:750;letter-spacing:1.1px;fill:#85cfff}
+      .head{font-size:22px;font-weight:750;fill:#fff}
+      .copy{font-size:13px;font-weight:500;fill:#60748e}
+      .label{font-size:16px;font-weight:750;fill:#102653}
+      .small{font-size:12px;font-weight:600;fill:#657991}
+      .status{font-size:11px;font-weight:750;letter-spacing:.4px}
+    </style>
+  </defs>
+  <rect x="1" y="1" width="1038" height="400" rx="30" fill="url(#surface)" stroke="#dce9f7" stroke-width="2"/>
+  <g filter="url(#shadow)">
+    <rect x="26" y="24" width="988" height="92" rx="22" fill="#0b2255"/>
+  </g>
+  <rect x="48" y="45" width="50" height="50" rx="15" fill="url(#brand)"/>
+  <path d="M73 56v28M59 70h28" stroke="#fff" stroke-width="3.5" stroke-linecap="round"/>
+  <text x="116" y="57" class="f eyebrow">ONEFLOW AI</text>
+  <text x="116" y="84" class="f head">Plugin aktif sesuai kebutuhan</text>
+  <text x="472" y="75" class="f copy" fill="#c3d8f2">Tambah alat operasional tanpa mengubah alur chat.</text>
+  <rect x="843" y="47" width="142" height="46" rx="23" fill="#122e6a"/>
+  <circle cx="867" cy="70" r="7" fill="#21c87a"/>
+  <text x="883" y="74" class="f status" fill="#fff">5 TERHUBUNG</text>
+  <path d="M520 116v22M126 138h790" stroke="#c8e0f9" stroke-width="2"/>
+  <g fill="#fff" filter="url(#shadow)">
+    <rect x="26" y="151" width="187" height="164" rx="20"/>
+    <rect x="226" y="151" width="187" height="164" rx="20"/>
+    <rect x="426" y="151" width="187" height="164" rx="20"/>
+    <rect x="626" y="151" width="187" height="164" rx="20"/>
+    <rect x="826" y="151" width="187" height="164" rx="20"/>
+  </g>
+  <g>
+    <circle cx="120" cy="138" r="6" fill="#1889ec"/><circle cx="320" cy="138" r="6" fill="#236be8"/><circle cx="520" cy="138" r="6" fill="#18ae70"/><circle cx="720" cy="138" r="6" fill="#704cf4"/><circle cx="920" cy="138" r="6" fill="#eb8d16"/>
+    <rect x="46" y="174" width="42" height="42" rx="13" fill="#e8f4ff"/><g transform="translate(55 183)" fill="none" stroke="#1889ec" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 10a2 2 0 0 1-2 2H6.828a2 2 0 0 0-1.414.586l-2.202 2.202A.71.71 0 0 1 2 14.286V4a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/><path d="M20 9a2 2 0 0 1 2 2v10.286a.71.71 0 0 1-1.212.502l-2.202-2.202A2 2 0 0 0 17.172 19H10a2 2 0 0 1-2-2v-1"/></g>
+    <text x="46" y="242" class="f label">Follow-up</text><text x="46" y="264" class="f small">Reminder customer</text>
+    <rect x="46" y="282" width="92" height="22" rx="11" fill="#eaf4ff"/><text x="64" y="297" class="f status" fill="#1878d8">AKTIF</text>
+    <rect x="246" y="174" width="42" height="42" rx="13" fill="#edf5ff"/><g transform="translate(255 183)" fill="none" stroke="#236be8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="8" height="4" x="8" y="2" rx="1" ry="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="M12 11h4"/><path d="M12 16h4"/><path d="M8 11h.01"/><path d="M8 16h.01"/></g>
+    <text x="246" y="242" class="f label">Order</text><text x="246" y="264" class="f small">Draft pesanan</text>
+    <rect x="246" y="282" width="94" height="22" rx="11" fill="#eef5ff"/><text x="260" y="297" class="f status" fill="#236be8">SIAP</text>
+    <rect x="446" y="174" width="42" height="42" rx="13" fill="#eaf9f1"/><g transform="translate(455 183)" fill="none" stroke="#18ae70" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 21.73a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73z"/><path d="M12 22V12"/><polyline points="3.29 7 12 12 20.71 7"/><path d="m7.5 4.27 9 5.15"/></g>
+    <text x="446" y="242" class="f label">Stok</text><text x="446" y="264" class="f small">Produk live</text>
+    <rect x="446" y="282" width="99" height="22" rx="11" fill="#e9f9f0"/><text x="459" y="297" class="f status" fill="#109d61">SINKRON</text>
+    <rect x="646" y="174" width="42" height="42" rx="13" fill="#f1edff"/><g transform="translate(655 183)" fill="none" stroke="#704cf4" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 2v4"/><path d="M16 2v4"/><path d="M21 14V6a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h8"/><path d="M3 10h18"/><path d="m16 20 2 2 4-4"/></g>
+    <text x="646" y="242" class="f label">Booking</text><text x="646" y="264" class="f small">Slot layanan</text>
+    <rect x="646" y="282" width="90" height="22" rx="11" fill="#f1edff"/><text x="660" y="297" class="f status" fill="#704cf4">AKTIF</text>
+    <rect x="846" y="174" width="42" height="42" rx="13" fill="#fff5e7"/><g transform="translate(855 183)" fill="none" stroke="#eb8d16" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.268 21a2 2 0 0 0 3.464 0"/><path d="M22 8c0-2.3-.8-4.3-2-6"/><path d="M3.262 15.326A1 1 0 0 0 4 17h16a1 1 0 0 0 .74-1.673C19.41 13.956 18 12.499 18 8A6 6 0 0 0 6 8c0 4.499-1.411 5.956-2.738 7.326"/><path d="M4 2C2.8 3.7 2 5.7 2 8"/></g>
+    <text x="846" y="242" class="f label">Notif admin</text><text x="846" y="264" class="f small">Handoff AI</text>
+    <rect x="846" y="282" width="93" height="22" rx="11" fill="#fff5e7"/><text x="859" y="297" class="f status" fill="#d57809">SIAP</text>
+  </g>
+  <rect x="26" y="336" width="988" height="42" rx="21" fill="#eef6ff"/>
+  <circle cx="50" cy="357" r="6" fill="#18ae70"/>
+  <text x="67" y="362" class="f copy" fill="#486686">Semua plugin terhubung ke inbox WhatsApp.</text>
+  <text x="764" y="362" class="f small" fill="#486686">Admin tetap memegang kontrol</text>
+</svg>

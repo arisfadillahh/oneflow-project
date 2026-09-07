@@ -1,0 +1,63 @@
+services:
+  postgres:
+    ports: !override []
+
+  redis:
+    ports: !override []
+
+  minio:
+    ports: !override []
+
+  app-backend:
+    ports: !override []
+    environment:
+      APP_BASE_URL: ${PUBLIC_APP_BASE_URL:-https://oneflow.id}
+      WEBSOCKET_ALLOWED_ORIGINS: ${PUBLIC_ALLOWED_ORIGINS:-https://oneflow.id,https://www.oneflow.id,http://localhost:3000,http://localhost}
+
+  ai-service:
+    ports: !override []
+
+  wa-gateway:
+    ports: !override []
+
+  edge:
+    image: caddy:2-alpine
+    container_name: oneflow-edge
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:80:80"
+    volumes:
+      - ./ops/Caddyfile.pc-server:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      app-backend:
+        condition: service_started
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "-H", "Host: arisfadillahh.space", "http://127.0.0.1/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 10s
+
+  cloudflared:
+    image: cloudflare/cloudflared:latest
+    container_name: oneflow-cloudflared
+    profiles:
+      - tunnel
+    restart: unless-stopped
+    env_file:
+      - .env.pc-server
+    command:
+      - tunnel
+      - --no-autoupdate
+      - run
+      - --token
+      - ${CLOUDFLARED_TOKEN:-}
+    depends_on:
+      edge:
+        condition: service_started
+
+volumes:
+  caddy_data:
+  caddy_config:

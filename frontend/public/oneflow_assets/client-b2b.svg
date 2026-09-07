@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 184 48" role="img" aria-label="B2B Sales">
+  <rect x="1" y="1" width="182" height="46" rx="23" fill="#fff" stroke="#d8e8fb" stroke-width="2"/>
+  <circle cx="27" cy="24" r="14" fill="#2563eb"/>
+  <path d="M18.5 21h17v10h-17zM23 21v-2.2a1.5 1.5 0 0 1 1.5-1.5h5a1.5 1.5 0 0 1 1.5 1.5V21M18.5 25h17M25 25v2h4v-2" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+  <text x="51" y="29" font-family="Inter,Segoe UI,Arial,sans-serif" font-size="15" font-weight="700" fill="#0f172a">B2B Sales</text>
+</svg>

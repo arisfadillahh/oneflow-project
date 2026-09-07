@@ -1,0 +1,61 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1920 1080" preserveAspectRatio="xMidYMid slice" role="img" aria-labelledby="title desc">
+  <title id="title">Oneflow WhatsApp workflow floating cards</title>
+  <desc id="desc">Floating interface cards showing a customer order request, an AI-prepared order, admin handoff, and an opportunity pipeline.</desc>
+  <defs>
+    <linearGradient id="glass" x1="0" x2="1" y1="0" y2="1">
+      <stop stop-color="#fff" stop-opacity=".96"/>
+      <stop offset="1" stop-color="#f7fbff" stop-opacity=".9"/>
+    </linearGradient>
+    <linearGradient id="ai" x1="0" x2="1" y1="0" y2="1">
+      <stop stop-color="#21b7ff"/>
+      <stop offset="1" stop-color="#087bd8"/>
+    </linearGradient>
+    <filter id="cardShadow" x="-18%" y="-25%" width="136%" height="155%">
+      <feDropShadow dx="0" dy="18" stdDeviation="20" flood-color="#071c4d" flood-opacity=".12"/>
+    </filter>
+    <style>
+      .f{font-family:Poppins,Inter,"Segoe UI",Arial,sans-serif}
+      .label{font-size:16px;font-weight:700;fill:#071c4d}
+      .copy{font-size:13px;font-weight:500;fill:#51657d}
+      .mini{font-size:12px;font-weight:700;fill:#087bd8;letter-spacing:.5px}
+    </style>
+  </defs>
+
+  <g transform="translate(92 230) rotate(-4)" filter="url(#cardShadow)">
+    <rect width="292" height="126" rx="24" fill="url(#glass)" stroke="#dceaf6"/>
+    <circle cx="42" cy="42" r="22" fill="#25d366"/>
+    <path d="M35 33h13a8 8 0 0 1 8 8v6a8 8 0 0 1-8 8h-7l-7 5 2-5a8 8 0 0 1-8-8v-6a8 8 0 0 1 7-8z" fill="#fff"/>
+    <text x="78" y="37" class="f mini">CHAT CUSTOMER</text>
+    <text x="78" y="61" class="f label">Mau order hari ini?</text>
+    <rect x="25" y="87" width="152" height="9" rx="4.5" fill="#dbe8f3"/>
+    <rect x="25" y="104" width="204" height="8" rx="4" fill="#edf3f9"/>
+  </g>
+
+  <g transform="translate(1478 168) rotate(4)" filter="url(#cardShadow)">
+    <rect width="310" height="132" rx="25" fill="url(#glass)" stroke="#dceaf6"/>
+    <rect x="25" y="28" width="44" height="44" rx="14" fill="url(#ai)"/>
+    <path d="M46 38v24M36 50h20" stroke="#fff" stroke-width="3" stroke-linecap="round"/>
+    <text x="88" y="43" class="f mini">AI + PLUGIN</text>
+    <text x="88" y="67" class="f label">Draft order siap</text>
+    <rect x="25" y="94" width="172" height="9" rx="4.5" fill="#dce8f5"/>
+    <rect x="205" y="88" width="70" height="22" rx="11" fill="#e2f4ff"/>
+    <text x="220" y="103" class="f mini">SIAP</text>
+  </g>
+
+  <g transform="translate(84 754) rotate(3)" filter="url(#cardShadow)">
+    <rect width="320" height="128" rx="24" fill="url(#glass)" stroke="#dceaf6"/>
+    <text x="25" y="36" class="f mini">PIPELINE UPDATE</text>
+    <text x="25" y="64" class="f label">Lead masuk follow-up</text>
+    <rect x="25" y="88" width="270" height="12" rx="6" fill="#eef5fc"/>
+    <rect x="25" y="88" width="182" height="12" rx="6" fill="#2196f3"/>
+  </g>
+
+  <g transform="translate(1498 718) rotate(-4)" filter="url(#cardShadow)">
+    <rect width="302" height="128" rx="24" fill="url(#glass)" stroke="#dceaf6"/>
+    <circle cx="46" cy="50" r="22" fill="#f4efff"/>
+    <path d="M39 50h14M46 43v14" stroke="#7c4dff" stroke-width="4" stroke-linecap="round"/>
+    <text x="85" y="44" class="f mini">HANDOFF</text>
+    <text x="85" y="68" class="f label">Admin siap ambil alih</text>
+    <rect x="25" y="96" width="137" height="8" rx="4" fill="#e1eaf4"/>
+  </g>
+</svg>
