@@ -60,3 +60,16 @@ Do not call a release synchronized only because the page returns HTTP 200. Compi
 - Compose backup: `/home/goffath/oneflow-deploy/docker-compose.before-monorepo-20260907.yml`.
 - Public route checks: `/`, `/dashboard/inbox`, `/agents/setup`, and `/whatsapp` returned HTTP 200.
 - Backend, AI, gateway, worker, database, Redis and MinIO were not recreated.
+
+## Release record: channels center 2026-09-07
+
+- Repository: `https://github.com/arisfadillahh/oneflow-project`
+- Commit: `f206eda`
+- Change: renamed the dashboard connection experience to `/channels`, added Instagram and TikTok upcoming states, and kept `/whatsapp` as a compatibility route.
+- Local checks: `npm test` passed 33/33; `npm run build` passed with 24 routes.
+- Remote image: `oneflow-dashboard-web:channels-route-20260907`.
+- Remote image ID: `sha256:f27aaaa37b2f387afc585f94da362ff95b84c7c80c5832a0455763a0f03a183b`.
+- Container health: healthy.
+- Compose backup: `/home/goffath/oneflow-deploy/docker-compose.before-channels-route-20260907.yml`.
+- Public route checks: `/`, `/dashboard/inbox`, `/channels`, `/whatsapp`, and `/agents/setup` returned HTTP 200.
+- Backend, AI, gateway, worker, database, Redis and MinIO were not recreated.
