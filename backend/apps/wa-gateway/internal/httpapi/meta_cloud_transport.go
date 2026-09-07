@@ -147,6 +147,24 @@ type metaTemplateSendRequest struct {
 
 var metaTemplateNamePattern = regexp.MustCompile(`^[a-z0-9_]{1,512}$`)
 var metaTemplateLanguagePattern = regexp.MustCompile(`^[a-z]{2}(?:_[A-Z]{2})?$`)
+var metaTemplateVariablePattern = regexp.MustCompile(`\{\{([1-9][0-9]*)\}\}`)
+
+func metaGraphError(resp *http.Response, fallback string) error {
+	var payload struct {
+		Error struct {
+			Message string `json:"message"`
+			Code    int    `json:"code"`
+			Type    string `json:"type"`
+		} `json:"error"`
+	}
+	if err := json.NewDecoder(io.LimitReader(resp.Body, 32<<10)).Decode(&payload); err == nil && payload.Error.Message != "" {
+		if payload.Error.Code != 0 {
+			return fmt.Errorf("%s (Meta %d)", payload.Error.Message, payload.Error.Code)
+		}
+		return errors.New(payload.Error.Message)
+	}
+	return errors.New(fallback)
+}
 
 func validateMetaTemplateDraft(draft *metaTemplateDraft) error {
 	draft.Name = strings.TrimSpace(strings.ToLower(draft.Name))
@@ -202,7 +220,7 @@ func (m *metaCloudTransport) ListTemplates(ctx context.Context) (map[string]any,
 	if err != nil {
 		return nil, err
 	}
-	endpoint := fmt.Sprintf("%s/%s/%s/message_templates?fields=id,name,status,category,language,components&limit=100", m.cfg.MetaGraphAPIBaseURL, m.cfg.MetaGraphAPIVersion, url.PathEscape(credentials.WABAID))
+	endpoint := fmt.Sprintf("%s/%s/%s/message_templates?fields=id,name,status,category,language,rejected_reason,components&limit=100", m.cfg.MetaGraphAPIBaseURL, m.cfg.MetaGraphAPIVersion, url.PathEscape(credentials.WABAID))
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, endpoint, nil)
 	if err != nil {
 		return nil, err
@@ -214,8 +232,7 @@ func (m *metaCloudTransport) ListTemplates(ctx context.Context) (map[string]any,
 	}
 	defer resp.Body.Close()
 	if resp.StatusCode >= 300 {
-		_, _ = io.Copy(io.Discard, resp.Body)
-		return nil, fmt.Errorf("Meta list templates returned %d", resp.StatusCode)
+		return nil, metaGraphError(resp, fmt.Sprintf("Meta list templates returned %d", resp.StatusCode))
 	}
 	var result struct {
 		Data []map[string]any `json:"data"`
@@ -237,14 +254,30 @@ func (m *metaCloudTransport) CreateTemplate(ctx context.Context, draft metaTempl
 	if err != nil {
 		return nil, err
 	}
+	bodyComponent := map[string]any{
+		"type": "BODY",
+		"text": draft.Body,
+	}
+	var highestVariable int
+	for _, match := range metaTemplateVariablePattern.FindAllStringSubmatch(draft.Body, -1) {
+		if len(match) > 1 {
+			if number, parseErr := strconv.Atoi(match[1]); parseErr == nil && number > highestVariable {
+				highestVariable = number
+			}
+		}
+	}
+	if highestVariable > 0 {
+		examples := make([]string, highestVariable)
+		for index := range examples {
+			examples[index] = fmt.Sprintf("contoh_%d", index+1)
+		}
+		bodyComponent["example"] = map[string]any{"body_text": [][]string{examples}}
+	}
 	payload, _ := json.Marshal(map[string]any{
 		"name":     draft.Name,
 		"category": draft.Category,
 		"language": draft.Language,
-		"components": []map[string]any{{
-			"type": "BODY",
-			"text": draft.Body,
-		}},
+		"components": []map[string]any{bodyComponent},
 	})
 	endpoint := fmt.Sprintf("%s/%s/%s/message_templates", m.cfg.MetaGraphAPIBaseURL, m.cfg.MetaGraphAPIVersion, url.PathEscape(credentials.WABAID))
 	req, err := http.NewRequestWithContext(ctx, http.MethodPost, endpoint, bytes.NewReader(payload))
@@ -259,8 +292,7 @@ func (m *metaCloudTransport) CreateTemplate(ctx context.Context, draft metaTempl
 	}
 	defer resp.Body.Close()
 	if resp.StatusCode >= 300 {
-		_, _ = io.Copy(io.Discard, resp.Body)
-		return nil, fmt.Errorf("Meta create template returned %d", resp.StatusCode)
+		return nil, metaGraphError(resp, fmt.Sprintf("Meta create template returned %d", resp.StatusCode))
 	}
 	var result map[string]any
 	if err := json.NewDecoder(resp.Body).Decode(&result); err != nil {
@@ -308,8 +340,7 @@ func (m *metaCloudTransport) SendTemplate(ctx context.Context, request metaTempl
 	}
 	defer resp.Body.Close()
 	if resp.StatusCode >= 300 {
-		_, _ = io.Copy(io.Discard, resp.Body)
-		return nil, fmt.Errorf("Meta send template returned %d", resp.StatusCode)
+		return nil, metaGraphError(resp, fmt.Sprintf("Meta send template returned %d", resp.StatusCode))
 	}
 	var result struct {
 		Messages []struct {

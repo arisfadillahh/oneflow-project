@@ -219,7 +219,7 @@ export function WhatsAppConnectionView({
           <div className="card-header">
             <div>
               <div className="card-title">Template Resmi Meta</div>
-              <div className="card-subtitle">Template milik WhatsApp Business Account yang dipilih.</div>
+              <div className="card-subtitle">Buat template untuk pesan di luar jendela chat 24 jam. Meta tetap meninjau setiap pengajuan.</div>
             </div>
             <button className="btn btn-secondary btn-sm" type="button" onClick={() => loadMetaTemplates?.(activeSession.id)} disabled={busyKey === "wa-meta-template-list"}>
               {busyKey === "wa-meta-template-list" ? "Memuat..." : "Refresh"}
@@ -227,21 +227,25 @@ export function WhatsAppConnectionView({
           </div>
           <div className="wa-meta-template-grid">
             <form className="wa-meta-template-form" onSubmit={createMetaTemplate}>
-              <strong>Ajukan Template</strong>
-              <input className="form-input" aria-label="Nama template" placeholder="nama_template" value={metaTemplateForm?.name || ""} onChange={(event) => setMetaTemplateForm?.({ ...(metaTemplateForm || {}), name: event.target.value })} />
+              <strong>1. Ajukan template baru</strong>
+              <label className="text-sm text-muted" htmlFor="meta-template-name">Nama internal</label>
+              <input id="meta-template-name" className="form-input" aria-label="Nama template" required pattern="[a-z0-9_]+" title="Gunakan huruf kecil, angka, dan underscore saja." placeholder="pesanan_dikonfirmasi" value={metaTemplateForm?.name || ""} onChange={(event) => setMetaTemplateForm?.({ ...(metaTemplateForm || {}), name: event.target.value })} />
+              <span className="text-xs text-muted">Gunakan huruf kecil, angka, dan underscore.</span>
               <div className="wa-meta-template-row">
                 <select className="form-select" aria-label="Kategori template" value={metaTemplateForm?.category || "UTILITY"} onChange={(event) => setMetaTemplateForm?.({ ...(metaTemplateForm || {}), category: event.target.value })}>
                   <option value="UTILITY">Utility</option>
                   <option value="MARKETING">Marketing</option>
                 </select>
-                <input className="form-input" aria-label="Bahasa template" placeholder="id" value={metaTemplateForm?.language || ""} onChange={(event) => setMetaTemplateForm?.({ ...(metaTemplateForm || {}), language: event.target.value })} />
+                <select className="form-select" aria-label="Bahasa template" value={metaTemplateForm?.language || "id"} onChange={(event) => setMetaTemplateForm?.({ ...(metaTemplateForm || {}), language: event.target.value })}><option value="id">Indonesia (id)</option><option value="en_US">English (en_US)</option></select>
               </div>
-              <textarea className="form-input wa-meta-template-body" aria-label="Isi template" value={metaTemplateForm?.body || ""} onChange={(event) => setMetaTemplateForm?.({ ...(metaTemplateForm || {}), body: event.target.value })} />
+              <label className="text-sm text-muted" htmlFor="meta-template-body">Isi pesan</label>
+              <textarea id="meta-template-body" className="form-input wa-meta-template-body" aria-label="Isi template" required maxLength={1024} placeholder="Halo {{1}}, pesanan kamu sudah dikonfirmasi." value={metaTemplateForm?.body || ""} onChange={(event) => setMetaTemplateForm?.({ ...(metaTemplateForm || {}), body: event.target.value })} />
+              <span className="text-xs text-muted">Maksimal 1.024 karakter. Gunakan {"{{1}}"}, {"{{2}}"}, dan seterusnya untuk nilai dinamis.</span>
               <button className="btn btn-primary" type="submit" disabled={busyKey === "wa-meta-template-create"}>{busyKey === "wa-meta-template-create" ? "Mengirim..." : "Ajukan ke Meta"}</button>
             </form>
             <div className="wa-meta-template-list">
               <div className="wa-meta-template-list-header">
-                <strong>Daftar Template</strong>
+                <strong>2. Pantau hasil review</strong>
                 <span className="badge gray">{metaTemplates.length}</span>
               </div>
               {metaTemplates.length ? metaTemplates.map((template) => (
@@ -249,16 +253,18 @@ export function WhatsAppConnectionView({
                   <div>
                     <strong>{template.name}</strong>
                     <span>{template.language || "-"} - {template.category || "-"}</span>
+                    {template.status === "REJECTED" && template.rejected_reason ? <span className="text-xs text-muted">Alasan Meta: {template.rejected_reason}</span> : null}
                   </div>
                   <span className={`badge ${template.status === "APPROVED" ? "green" : template.status === "REJECTED" ? "red" : "orange"}`}>{template.status || "PENDING"}</span>
                 </div>
-              )) : <p className="text-sm text-muted">Belum ada data template yang dimuat.</p>}
+              )) : <p className="text-sm text-muted">Belum ada template yang dimuat. Klik Refresh untuk mengecek template terbaru dari Meta.</p>}
               <form className="wa-meta-template-send" onSubmit={sendMetaTemplate}>
-                <strong>Kirim Template Uji</strong>
-                <input className="form-input" aria-label="Nomor tujuan template" placeholder="62812..." value={metaTemplateSendForm?.phone || ""} onChange={(event) => setMetaTemplateSendForm?.({ ...(metaTemplateSendForm || {}), phone: event.target.value })} />
+                <strong>3. Kirim uji setelah Approved</strong>
+                <span className="text-xs text-muted">Template hanya dapat dikirim jika statusnya Approved. Nomor tanpa tanda + atau spasi.</span>
+                <input className="form-input" aria-label="Nomor tujuan template" required pattern="[0-9]{8,15}" placeholder="6281212022628" value={metaTemplateSendForm?.phone || ""} onChange={(event) => setMetaTemplateSendForm?.({ ...(metaTemplateSendForm || {}), phone: event.target.value })} />
                 <div className="wa-meta-template-row">
                   <input className="form-input" aria-label="Nama template kirim" placeholder="nama_template" value={metaTemplateSendForm?.name || ""} onChange={(event) => setMetaTemplateSendForm?.({ ...(metaTemplateSendForm || {}), name: event.target.value })} />
-                  <input className="form-input" aria-label="Bahasa pengiriman" placeholder="id" value={metaTemplateSendForm?.language || ""} onChange={(event) => setMetaTemplateSendForm?.({ ...(metaTemplateSendForm || {}), language: event.target.value })} />
+                  <select className="form-select" aria-label="Bahasa pengiriman" value={metaTemplateSendForm?.language || "id"} onChange={(event) => setMetaTemplateSendForm?.({ ...(metaTemplateSendForm || {}), language: event.target.value })}><option value="id">Indonesia (id)</option><option value="en_US">English (en_US)</option></select>
                 </div>
                 <button className="btn btn-secondary" type="submit" disabled={busyKey === "wa-meta-template-send"}>{busyKey === "wa-meta-template-send" ? "Mengirim..." : "Kirim Uji"}</button>
               </form>
