@@ -315,6 +315,8 @@ func (s *Server) handleWhatsAppSessionRoutes(w http.ResponseWriter, r *http.Requ
 		s.proxyWhatsAppSession(w, r, session, http.MethodPost, "meta-template-send", payload)
 	case "meta-complete":
 		s.handleMetaCloudComplete(w, r, session)
+	case "meta-test-connect":
+		s.handleMetaTestConnect(w, r, session)
 	default:
 		http.NotFound(w, r)
 	}

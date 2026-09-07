@@ -37,6 +37,10 @@ type Config struct {
 	MetaGraphAPIVersion        string
 	MetaGraphAPIBaseURL        string
 	MetaCredentialKey          string
+	MetaTestEnabled            bool
+	MetaTestAccessToken        string
+	MetaTestWABAID             string
+	MetaTestPhoneNumberID      string
 }
 
 func Load() Config {
@@ -70,6 +74,10 @@ func Load() Config {
 		MetaGraphAPIVersion:        strings.TrimSpace(getenv("META_GRAPH_API_VERSION", "")),
 		MetaGraphAPIBaseURL:        strings.TrimRight(getenv("META_GRAPH_API_BASE_URL", "https://graph.facebook.com"), "/"),
 		MetaCredentialKey:          strings.TrimSpace(getenv("META_CREDENTIAL_ENCRYPTION_KEY", "")),
+		MetaTestEnabled:            strings.EqualFold(getenv("META_TEST_ENABLED", "false"), "true"),
+		MetaTestAccessToken:        strings.TrimSpace(getenv("META_TEST_ACCESS_TOKEN", "")),
+		MetaTestWABAID:             strings.TrimSpace(getenv("META_TEST_WABA_ID", "")),
+		MetaTestPhoneNumberID:      strings.TrimSpace(getenv("META_TEST_PHONE_NUMBER_ID", "")),
 	}
 }
 

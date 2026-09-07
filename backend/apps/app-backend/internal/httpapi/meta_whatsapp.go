@@ -28,6 +28,7 @@ func (s *Server) handleMetaCloudConfig(w http.ResponseWriter, r *http.Request) {
 	}
 	writeJSON(w, http.StatusOK, map[string]any{
 		"enabled":         s.cfg.MetaCloudEnabled,
+		"testEnabled":     s.cfg.MetaTestEnabled,
 		"appId":           s.cfg.MetaAppID,
 		"configurationId": s.cfg.MetaConfigurationID,
 		"graphVersion":    s.cfg.MetaGraphAPIVersion,
@@ -128,6 +129,48 @@ func (s *Server) handleMetaCloudComplete(w http.ResponseWriter, r *http.Request,
 		"onboardingMode":    "coexistence",
 		"historySyncStatus": "pending",
 	})
+}
+
+// handleMetaTestConnect is deliberately disabled by default. It exists only to
+// produce App Review evidence with Meta's temporary test number before TP/BSP
+// approval; production customers must use Embedded Signup.
+func (s *Server) handleMetaTestConnect(w http.ResponseWriter, r *http.Request, session map[string]string) {
+	if r.Method != http.MethodPost {
+		http.NotFound(w, r)
+		return
+	}
+	role := s.role(r.Context())
+	if role != "owner" && role != "super_admin" && role != "admin" {
+		writeJSON(w, http.StatusForbidden, map[string]string{"error": "only an organization admin can connect the Meta test channel"})
+		return
+	}
+	if !s.cfg.MetaCloudEnabled || !s.cfg.MetaTestEnabled || s.cfg.MetaTestAccessToken == "" || !validMetaGraphID(s.cfg.MetaTestWABAID) || !validMetaGraphID(s.cfg.MetaTestPhoneNumberID) {
+		writeJSON(w, http.StatusConflict, map[string]string{"error": "Meta test channel is not enabled"})
+		return
+	}
+	if session["provider"] != "meta_cloud" {
+		writeJSON(w, http.StatusConflict, map[string]string{"error": "session is not an official WhatsApp session"})
+		return
+	}
+	encryptedToken, err := s.encryptMetaCredential(s.cfg.MetaTestAccessToken)
+	if err != nil {
+		writeJSON(w, http.StatusInternalServerError, map[string]string{"error": "official WhatsApp credentials are not configured safely"})
+		return
+	}
+	details, _ := json.Marshal(map[string]any{"provider": "meta_cloud", "onboardingMode": "meta_test", "official": false, "testOnly": true, "needsQr": false})
+	tag, err := s.db.Exec(r.Context(), `
+		UPDATE whatsapp_sessions
+		SET status = 'connected', provider = 'meta_cloud', onboarding_mode = 'meta_test',
+		    meta_waba_id = $3, meta_phone_number_id = $4, meta_business_token_ciphertext = $5,
+		    meta_onboarded_at = NOW(), details = $6::jsonb, last_connected_at = NOW(), updated_at = NOW()
+		WHERE id = $1 AND organization_id = $2 AND deleted_at IS NULL AND provider = 'meta_cloud'
+	`, session["id"], s.organizationID(r.Context()), s.cfg.MetaTestWABAID, s.cfg.MetaTestPhoneNumberID, encryptedToken, string(details))
+	if err != nil || tag.RowsAffected() != 1 {
+		writeJSON(w, http.StatusInternalServerError, map[string]string{"error": "failed to save Meta test connection"})
+		return
+	}
+	_ = s.insertAuditLog(r.Context(), "whatsapp_session.meta_test_connect", "whatsapp_session", session["id"], map[string]any{"test_only": true})
+	writeJSON(w, http.StatusOK, map[string]any{"status": "connected", "provider": "meta_cloud", "testOnly": true})
 }
 
 func (s *Server) exchangeMetaCode(ctx context.Context, code string) (string, error) {

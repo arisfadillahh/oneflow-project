@@ -2592,7 +2592,9 @@ export default function DashboardApp() {
     try {
       setBusyKey(`wa-meta-${sessionId}`);
       setError("");
-      const connected = await connectOfficialWhatsApp(sessionId);
+      const connected = metaCloudConfig.testEnabled
+        ? await requestJSON(`${apiBase}/api/whatsapp/sessions/${encodeURIComponent(sessionId)}/meta-test-connect`, { method: "POST" })
+        : await connectOfficialWhatsApp(sessionId);
       setWaStatus(connected);
       await loadDashboardData(auth, { preserveDrafts: true });
     } catch (connectError) {
