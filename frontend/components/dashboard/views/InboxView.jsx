@@ -254,6 +254,7 @@ export function InboxView({
     if (!conversation?.id || !canSubmitManualMessage || busyKey === "conversation-manual-message") return;
     runConversationAction(conversation.id, "manual-message", {
       text: manualMessage,
+      phone: conversation.phone,
       mediaBase64: manualMedia?.base64,
       mediaMime: manualMedia?.mimeType,
       mediaName: manualMedia?.fileName,
