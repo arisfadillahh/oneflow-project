@@ -440,7 +440,7 @@ export function InboxView({
                     Return to AI
                   </button>
                 )}
-                {(!isHumanMode || canForceTakeover) && (
+                {(!isHumanMode || (canForceTakeover && conversation?.assignedToId !== auth?.user?.id)) && (
                   <button className="btn btn-warning btn-sm" disabled={busyKey === "conversation-takeover"} onClick={() => runConversationAction(conversation.id, "takeover", { note: takeoverNote || "" })}>
                     Take Over
                   </button>

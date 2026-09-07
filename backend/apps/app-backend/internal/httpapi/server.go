@@ -5612,46 +5612,8 @@ func (s *Server) handleManualMessage(w http.ResponseWriter, r *http.Request, id 
 		    AND direction = 'inbound'
 		) inbound ON TRUE
 		WHERE c.id = $1 AND c.organization_id = $2
-		FOR UPDATE
+		FOR UPDATE OF c
 	`, id, s.organizationID(r.Context())).Scan(&assignedTo, &mode, &phone, &whatsAppSessionID, &whatsappProvider, &lastCustomerMessageAt)
-	if err != nil && req.Phone != "" {
-		// Inbound webhooks can create a fresh conversation for the same contact
-		// while an Inbox tab still holds the previous conversation id.
-		err = tx.QueryRow(r.Context(), `
-			SELECT
-			  c.assigned_to,
-			  c.mode::text,
-			  ct.phone,
-			  COALESCE(c.whatsapp_session_id::text, ''),
-			  COALESCE(ws.provider, 'whatsmeow'),
-			  inbound.last_customer_message_at
-			FROM conversations c
-			JOIN contacts ct ON ct.id = c.contact_id AND ct.organization_id = c.organization_id
-			LEFT JOIN whatsapp_sessions ws ON ws.id = c.whatsapp_session_id AND ws.organization_id = c.organization_id
-			LEFT JOIN LATERAL (
-			  SELECT MAX(COALESCE(sent_at, created_at)) AS last_customer_message_at
-			  FROM messages
-			  WHERE conversation_id = c.id AND organization_id = c.organization_id AND direction = 'inbound'
-			) inbound ON TRUE
-			WHERE c.organization_id = $1
-			  AND regexp_replace(ct.phone, '[^0-9]', '', 'g') = regexp_replace($2, '[^0-9]', '', 'g')
-			ORDER BY c.last_message_at DESC
-			LIMIT 1
-		`, s.organizationID(r.Context()), req.Phone).Scan(&assignedTo, &mode, &phone, &whatsAppSessionID, &whatsappProvider, &lastCustomerMessageAt)
-		if err == nil {
-			var fallbackID string
-			if scanErr := tx.QueryRow(r.Context(), `
-				SELECT c.id::text
-				FROM conversations c
-				JOIN contacts ct ON ct.id = c.contact_id AND ct.organization_id = c.organization_id
-				WHERE c.organization_id = $1
-				  AND regexp_replace(ct.phone, '[^0-9]', '', 'g') = regexp_replace($2, '[^0-9]', '', 'g')
-				ORDER BY c.last_message_at DESC LIMIT 1
-			`, s.organizationID(r.Context()), req.Phone).Scan(&fallbackID); scanErr == nil {
-				id = fallbackID
-			}
-		}
-	}
 	if err != nil {
 		writeJSON(w, http.StatusNotFound, map[string]string{"error": "conversation not found"})
 		return
