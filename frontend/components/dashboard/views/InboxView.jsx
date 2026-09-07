@@ -440,14 +440,9 @@ export function InboxView({
                     Return to AI
                   </button>
                 )}
-                {!isHumanMode && (
+                {(!isHumanMode || canForceTakeover) && (
                   <button className="btn btn-warning btn-sm" disabled={busyKey === "conversation-takeover"} onClick={() => runConversationAction(conversation.id, "takeover", { note: takeoverNote || "" })}>
                     Take Over
-                  </button>
-                )}
-                {canForceTakeover && isHumanMode && (
-                  <button className="btn btn-danger btn-sm" disabled={busyKey === "conversation-force-takeover"} onClick={() => runConversationAction(conversation.id, "force-takeover", { note: takeoverNote || "" })}>
-                    Force Takeover
                   </button>
                 )}
                 <button className="btn btn-success btn-sm" disabled={busyKey === "conversation-resolve"} onClick={() => runConversationAction(conversation.id, "resolve", {})}>
