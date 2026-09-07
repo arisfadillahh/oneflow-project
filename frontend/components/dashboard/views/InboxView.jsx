@@ -324,7 +324,7 @@ export function InboxView({
     {!canOpenChatOps && (
       <div className="notice warn inbox-connection-warning">
         <div>
-          <strong>WhatsApp belum terkoneksi</strong>
+          <strong>Belum ada channel yang terkoneksi</strong>
           <p>Inbox tetap bisa dibuka untuk review dan Return to AI. Kirim pesan manual butuh WhatsApp connected.</p>
         </div>
         <button className="btn btn-primary btn-sm" type="button" onClick={navigateToWhatsApp}>

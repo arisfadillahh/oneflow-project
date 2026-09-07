@@ -170,7 +170,7 @@ export function WhatsAppConnectionView({
               <option key={agent.id} value={agent.id}>{agent.name}</option>
             ))}
           </select>
-          <button className="btn btn-primary" type="submit" disabled={busyKey === "wa-session-create" || String(busyKey || "").startsWith("wa-meta-") || !canCreateWhatsApp} data-tour="connect-whatsapp">Hubungkan WhatsApp</button>
+          <button className="btn btn-primary" type="submit" disabled={busyKey === "wa-session-create" || String(busyKey || "").startsWith("wa-meta-") || !canCreateWhatsApp} data-tour="connect-whatsapp">Hubungkan channel</button>
         </form>
         <div className="table-wrap">
           <table>

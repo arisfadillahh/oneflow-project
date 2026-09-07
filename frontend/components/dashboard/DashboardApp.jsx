@@ -111,7 +111,7 @@ const mobileRestrictedGuidance = {
   },
   whatsapp: {
     title: "Koneksi WhatsApp tersedia di desktop",
-    text: "Hubungkan WhatsApp Business melalui Meta Coexistence.",
+    text: "Hubungkan channel bisnis melalui konektor resmi Oneflow.",
   },
   businessTools: {
     title: "Setup Alat Bisnis tersedia di desktop",
@@ -2338,7 +2338,7 @@ export default function DashboardApp() {
   async function requestQr(sessionIdOverride = "") {
     let sessionId = sessionIdOverride || activeWaSessionId || visibleWaSessions.find((item) => item.isDefault)?.id || visibleWaSessions[0]?.id;
     if (!sessionId) {
-      setError("Isi nama perangkat dan pilih AI agent dulu, lalu klik Hubungkan WhatsApp.");
+      setError("Isi nama perangkat dan pilih AI agent dulu, lalu klik Hubungkan channel.");
       return;
     }
     try {

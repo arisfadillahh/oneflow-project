@@ -1459,7 +1459,7 @@ export function AgentsView({
         : "Knowledge FAQ/dokumen sudah ditambahkan",
       state: hasUsableKnowledge ? "ok" : "warn",
     },
-    { label: "WhatsApp terhubung", state: connectedSessions.length > 0 ? "ok" : "warn" },
+    { label: "Channel terhubung", state: connectedSessions.length > 0 ? "ok" : "warn" },
     { label: "Aturan panggil admin sudah diatur", state: String(form.escalationPrompt || form.fallbackWaitingMessage || "").trim() ? "ok" : "warn" },
   ];
 
@@ -1896,7 +1896,7 @@ export function AgentsView({
               <button type="button" className={`agents-startguide-step ${anyWhatsAppConnected ? "done" : hasActiveAgent ? "active" : ""}`} onClick={() => navigateToWhatsApp?.()}>
                 <span className="agents-startguide-index">{anyWhatsAppConnected ? Icons.check : "2"}</span>
                 <span className="agents-startguide-copy">
-                  <strong>Hubungkan WhatsApp</strong>
+                  <strong>Hubungkan channel</strong>
                   <small>{anyWhatsAppConnected ? "Terhubung" : "Belum terhubung"}</small>
                 </span>
               </button>
