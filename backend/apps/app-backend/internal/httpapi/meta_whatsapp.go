@@ -160,7 +160,7 @@ func (s *Server) handleMetaTestConnect(w http.ResponseWriter, r *http.Request, s
 	details, _ := json.Marshal(map[string]any{"provider": "meta_cloud", "onboardingMode": "meta_test", "official": false, "testOnly": true, "needsQr": false})
 	tag, err := s.db.Exec(r.Context(), `
 		UPDATE whatsapp_sessions
-		SET status = 'connected', provider = 'meta_cloud', onboarding_mode = 'meta_test',
+		SET status = 'connected', provider = 'meta_cloud', onboarding_mode = 'cloud_api',
 		    meta_waba_id = $3, meta_phone_number_id = $4, meta_business_token_ciphertext = $5,
 		    meta_onboarded_at = NOW(), details = $6::jsonb, last_connected_at = NOW(), updated_at = NOW()
 		WHERE id = $1 AND organization_id = $2 AND deleted_at IS NULL AND provider = 'meta_cloud'
