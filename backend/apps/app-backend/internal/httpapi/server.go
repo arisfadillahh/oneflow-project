@@ -5637,7 +5637,6 @@ func (s *Server) handleManualMessage(w http.ResponseWriter, r *http.Request, id 
 			  AND regexp_replace(ct.phone, '[^0-9]', '', 'g') = regexp_replace($2, '[^0-9]', '', 'g')
 			ORDER BY c.last_message_at DESC
 			LIMIT 1
-			FOR UPDATE OF c
 		`, s.organizationID(r.Context()), req.Phone).Scan(&assignedTo, &mode, &phone, &whatsAppSessionID, &whatsappProvider, &lastCustomerMessageAt)
 		if err == nil {
 			var fallbackID string
