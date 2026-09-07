@@ -28,7 +28,8 @@ import {
   TicketsView,
   UsageLogsView,
   WalletView,
-  WhatsAppConnectionView
+  WhatsAppConnectionView,
+  WhatsAppTemplatesView
 } from "./views";
 import {
   apiBase,
@@ -4192,6 +4193,30 @@ export default function DashboardApp() {
           billingPlan={billingPlan}
           navigateToUpgrade={() => navigateToView("upgrade")}
           navigateToBusinessTools={() => navigateToView("businessTools")}
+          navigateToTemplates={() => navigateToView("whatsappTemplates")}
+          templateToolsOnSeparatePage
+        />
+      );
+    }
+
+    if (activeView === "whatsappTemplates") {
+      const connectedSession = waSessions.find((session) => session.id === activeWaSessionId && session.status === "connected") || waSessions.find((session) => session.status === "connected");
+      if (!connectedSession) {
+        return <div className="card"><div className="card-title">Hubungkan WhatsApp terlebih dahulu</div><p className="text-muted">Template hanya tersedia setelah koneksi WhatsApp resmi aktif.</p><button className="btn btn-primary" type="button" onClick={() => navigateToView("whatsapp")}>Buka Channels</button></div>;
+      }
+      return (
+        <WhatsAppTemplatesView
+          activeSession={connectedSession}
+          metaTemplates={metaTemplates}
+          metaTemplateForm={metaTemplateForm}
+          setMetaTemplateForm={setMetaTemplateForm}
+          metaTemplateSendForm={metaTemplateSendForm}
+          setMetaTemplateSendForm={setMetaTemplateSendForm}
+          loadMetaTemplates={loadMetaTemplates}
+          createMetaTemplate={createMetaTemplate}
+          sendMetaTemplate={sendMetaTemplate}
+          busyKey={busyKey}
+          navigateToChannels={() => navigateToView("whatsapp")}
         />
       );
     }

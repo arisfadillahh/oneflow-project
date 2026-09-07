@@ -16,4 +16,5 @@ export * from "./PricingSettingsView";
 export * from "./HealthView";
 export * from "./PlaygroundView";
 export * from "./WhatsAppConnectionView";
+export * from "./WhatsAppTemplatesView";
 export * from "./MiscViews";

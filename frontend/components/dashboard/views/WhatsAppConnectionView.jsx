@@ -41,14 +41,16 @@ export function WhatsAppConnectionView({
   cancelPendingSession,
   billingPlan,
   navigateToUpgrade,
-  navigateToBusinessTools
+  navigateToBusinessTools,
+  navigateToTemplates,
+  templateToolsOnSeparatePage = false
 }) {
   const hasSessions = sessions.length > 0;
   const hasAIAgents = aiAgents.some((agent) => agent.isActive !== false);
   const isWaBusy = String(busyKey || "").startsWith("wa-");
   const activeSession = sessions.find((item) => item.id === activeSessionId) || sessions[0];
   const isConnected = activeSession?.status === "connected";
-  const showOfficialTemplateTools = Boolean(canManageOfficialTemplates && isConnected);
+  const showOfficialTemplateTools = Boolean(canManageOfficialTemplates && isConnected && !templateToolsOnSeparatePage);
   const qrActionLabel = "Sambungkan Resmi";
   const maxWhatsAppSessions = Number(billingPlan?.maxWhatsAppSessions ?? billingPlan?.max_whatsapp_sessions ?? 0);
   const planName = billingPlan?.planName || billingPlan?.name || "Trial";
@@ -75,6 +77,7 @@ export function WhatsAppConnectionView({
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.13-3.36L23 10"/><path d="M20.49 15a9 9 0 0 1-14.13 3.36L1 14"/></svg>
             {busyKey === "wa-session-auto" ? "Menyiapkan Session" : qrActionLabel}
           </button>
+          {canManageOfficialTemplates && isConnected ? <button className="btn btn-secondary" type="button" onClick={navigateToTemplates}>Template WhatsApp</button> : null}
         </div>
       </div>
 

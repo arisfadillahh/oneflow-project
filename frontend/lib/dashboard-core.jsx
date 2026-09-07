@@ -96,6 +96,7 @@ export const viewMeta = {
   usage: { title: "Laporan Pemakaian", description: "Ringkasan pemakaian AI. Isi chat tetap privat." },
   health: { title: "Status Sistem", description: "Status sistem dan koneksi." },
   whatsapp: { title: "Channels", description: "Hubungkan channel bisnis ke AI kamu." },
+  whatsappTemplates: { title: "Template WhatsApp", description: "Kelola template pesan resmi WhatsApp." },
   appsettings: { title: "Model & Harga", description: "Atur model AI dan perhitungan kredit." },
 };
 
@@ -609,6 +610,7 @@ export const setupRouteConfigs = {
   "/playground": { view: "playground" },
   "/whatsapp": { view: "whatsapp", anchor: "connect-whatsapp" },
   "/channels": { view: "whatsapp", anchor: "connect-whatsapp" },
+  "/whatsapp/templates": { view: "whatsappTemplates" },
   "/escalation": { view: "whatsapp", anchor: "bind-escalation" },
 };
 
@@ -635,6 +637,7 @@ export function segmentForView(viewId) {
 export function pathForView(viewId) {
   if (viewId === "playground") return "/playground";
   if (viewId === "whatsapp") return "/channels";
+  if (viewId === "whatsappTemplates") return "/whatsapp/templates";
   if (viewId === "dashboard") return "/dashboard";
   return `/dashboard/${segmentForView(viewId)}`;
 }
@@ -679,6 +682,7 @@ export function isViewAllowedForRole(role, viewId) {
   const canonical = canonicalViewId(viewId);
   if (canonical === "account") return Boolean(role);
   if (canonical === "playground") return ["super_admin", "admin", "operator"].includes(role);
+  if (canonical === "whatsappTemplates") return ["super_admin", "admin", "operator"].includes(role);
   return (roleNav[role] ?? []).some((item) => item.id === canonical);
 }
 
