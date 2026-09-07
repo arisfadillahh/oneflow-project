@@ -3581,6 +3581,17 @@ tbody tr:last-child td { border-bottom: none; }
   flex-shrink: 0;
 }
 
+.chat-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  padding: 8px 16px;
+  background: var(--white);
+  border-bottom: 1px solid var(--gray-200);
+  flex-shrink: 0;
+}
+
 .chat-subline {
   display: flex;
   align-items: center;
@@ -3894,6 +3905,18 @@ tbody tr:last-child td { border-bottom: none; }
 
   .chat-header > div:not(.mobile-chat-nav) {
     width: 100%;
+  }
+
+  .chat-actions {
+    padding: 8px 10px;
+    gap: 6px;
+  }
+
+  .chat-actions .btn {
+    flex: 1 1 auto;
+    min-width: 0;
+    min-height: 36px;
+    white-space: normal;
   }
 
   .chat-subline {

@@ -430,50 +430,30 @@ export function InboxView({
                   </div>
                 </div>
               </div>
-              {/* Role-based action buttons */}
-              {!isOwner && (
-                <div style={{ display: "flex", gap: "8px", flexShrink: 0, flexWrap: "wrap" }}>
-                  {/* Return to AI — only when in human mode */}
-                  {canReturnToAI && (
-                    <button
-                      className="btn btn-secondary btn-sm"
-                      disabled={busyKey === "conversation-return-to-ai"}
-                      onClick={() => runConversationAction(conversation.id, "return-to-ai", {})}
-                    >
-                      Return to AI
-                    </button>
-                  )}
-                  {/* Take Over — when AI mode (Agent: only if unassigned; Admin/SA: always) */}
-                  {!isHumanMode && (
-                    <button
-                      className="btn btn-warning btn-sm"
-                      disabled={busyKey === "conversation-takeover"}
-                      onClick={() => runConversationAction(conversation.id, "takeover", { note: takeoverNote || "" })}
-                    >
-                      Take Over
-                    </button>
-                  )}
-                  {/* Force Takeover — Admin/SA only when in human mode */}
-                  {canForceTakeover && isHumanMode && (
-                    <button
-                      className="btn btn-danger btn-sm"
-                      disabled={busyKey === "conversation-force-takeover"}
-                      onClick={() => runConversationAction(conversation.id, "force-takeover", { note: takeoverNote || "" })}
-                    >
-                      Force Takeover
-                    </button>
-                  )}
-                  {/* Resolve */}
-                  <button
-                    className="btn btn-success btn-sm"
-                    disabled={busyKey === "conversation-resolve"}
-                    onClick={() => runConversationAction(conversation.id, "resolve", {})}
-                  >
-                    Resolve
-                  </button>
-                </div>
-              )}
             </div>
+
+            {!isOwner && (
+              <div className="chat-actions" aria-label="Aksi percakapan">
+                {canReturnToAI && (
+                  <button className="btn btn-secondary btn-sm" disabled={busyKey === "conversation-return-to-ai"} onClick={() => runConversationAction(conversation.id, "return-to-ai", {})}>
+                    Return to AI
+                  </button>
+                )}
+                {!isHumanMode && (
+                  <button className="btn btn-warning btn-sm" disabled={busyKey === "conversation-takeover"} onClick={() => runConversationAction(conversation.id, "takeover", { note: takeoverNote || "" })}>
+                    Take Over
+                  </button>
+                )}
+                {canForceTakeover && isHumanMode && (
+                  <button className="btn btn-danger btn-sm" disabled={busyKey === "conversation-force-takeover"} onClick={() => runConversationAction(conversation.id, "force-takeover", { note: takeoverNote || "" })}>
+                    Force Takeover
+                  </button>
+                )}
+                <button className="btn btn-success btn-sm" disabled={busyKey === "conversation-resolve"} onClick={() => runConversationAction(conversation.id, "resolve", {})}>
+                  Resolve
+                </button>
+              </div>
+            )}
 
             <div 
               className="message-thread chat-messages"
