@@ -9,7 +9,11 @@ Oneflow is maintained as one monorepo with clear service boundaries.
 - `infra/`: Docker Compose, Caddy and testing deployment support. Secrets stay outside Git.
 - `docs/`: cross-service API, architecture, Meta coexistence, QA and deployment documentation.
 
-The old standalone repositories remain available as migration references. This monorepo is a local assembly of their current working trees; it has not been pushed to a new GitHub remote yet.
+The old standalone repositories remain available as migration references. The monorepo is published at `https://github.com/arisfadillahh/oneflow-project`.
+
+## Channel UX
+
+The dashboard uses a single Channel Center pattern. WhatsApp is the active production connector; Instagram and TikTok are represented as upcoming connectors until their official OAuth, permissions and webhook adapters are implemented. Do not label an upcoming channel as connected or route messages to it before its backend adapter is live.
 
 ## Rules
 

@@ -91,6 +91,42 @@ export function WhatsAppConnectionView({
         ))}
       </div>
 
+      <div className="card channel-center-card" style={{ marginBottom: "24px" }}>
+        <div className="card-header">
+          <div>
+            <div className="card-title">Pusat channel</div>
+            <div className="card-subtitle">Hubungkan channel bisnis dari satu tempat. Semua pesan akan masuk ke Inbox dan memakai agent yang kamu pilih.</div>
+          </div>
+        </div>
+        <div className="channel-center-grid">
+          <div className="channel-center-item is-active">
+            <div className="channel-center-icon channel-icon-wa">WA</div>
+            <div className="channel-center-copy">
+              <strong>WhatsApp</strong>
+              <span>Channel utama untuk chat pelanggan.</span>
+            </div>
+            <span className="badge green">Tersedia</span>
+          </div>
+          <div className="channel-center-item">
+            <div className="channel-center-icon channel-icon-ig">IG</div>
+            <div className="channel-center-copy">
+              <strong>Instagram</strong>
+              <span>Balas DM dari Inbox Oneflow.</span>
+            </div>
+            <span className="badge gray">Segera hadir</span>
+          </div>
+          <div className="channel-center-item">
+            <div className="channel-center-icon channel-icon-tt">TT</div>
+            <div className="channel-center-copy">
+              <strong>TikTok</strong>
+              <span>Siapkan channel sosial berikutnya.</span>
+            </div>
+            <span className="badge gray">Segera hadir</span>
+          </div>
+        </div>
+        <p className="text-sm text-muted channel-center-note">Untuk channel baru, Oneflow akan memandu login akun bisnis, izin akses, dan tes koneksi tanpa istilah teknis.</p>
+      </div>
+
       {!hasAIAgents ? (
         <div className="wa-agent-empty">
           <div>
