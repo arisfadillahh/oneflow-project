@@ -31,7 +31,7 @@ export const roleNav = {
     { id: "team", label: "Tim", icon: "team", group: "more" },
     { id: "playground", label: "Coba AI", icon: "spark" },
     { id: "contacts", label: "Kontak", icon: "contacts", group: "ops" },
-    { id: "whatsapp", label: "WhatsApp", icon: "whatsapp" },
+    { id: "channels", label: "Channels", icon: "whatsapp" },
     { id: "businessTools", label: "Alat Bisnis", icon: "settings", group: "ops" },
     { id: "analytics", label: "Laporan", icon: "analytics", group: "more" },
     { id: "upgrade", label: "Tagihan", icon: "wallet", group: "more" },
@@ -47,7 +47,7 @@ export const roleNav = {
     { id: "team", label: "Tim", icon: "team", group: "more" },
     { id: "playground", label: "Coba AI", icon: "spark" },
     { id: "contacts", label: "Kontak", icon: "contacts", group: "ops" },
-    { id: "whatsapp", label: "WhatsApp", icon: "whatsapp" },
+    { id: "channels", label: "Channels", icon: "whatsapp" },
     { id: "businessTools", label: "Alat Bisnis", icon: "settings", group: "ops" },
     { id: "analytics", label: "Laporan", icon: "analytics", group: "more" },
     { id: "upgrade", label: "Tagihan", icon: "wallet", group: "more" },
@@ -62,7 +62,7 @@ export const roleNav = {
     { id: "agents", label: "AI CS", icon: "robot" },
     { id: "playground", label: "Coba AI", icon: "spark" },
     { id: "contacts", label: "Kontak", icon: "contacts", group: "ops" },
-    { id: "whatsapp", label: "WhatsApp", icon: "whatsapp" },
+    { id: "channels", label: "Channels", icon: "whatsapp" },
     { id: "analytics", label: "Laporan", icon: "analytics", group: "more" },
     { id: "upgrade", label: "Tagihan", icon: "wallet", group: "more" },
     { id: "deals", label: "Tindak Lanjut", icon: "analytics", moduleKey: "prospects", group: "tools" },
@@ -95,7 +95,7 @@ export const viewMeta = {
   team: { title: "Tim", description: "Tambah anggota tim dan atur aksesnya." },
   usage: { title: "Laporan Pemakaian", description: "Ringkasan pemakaian AI. Isi chat tetap privat." },
   health: { title: "Status Sistem", description: "Status sistem dan koneksi." },
-  whatsapp: { title: "WhatsApp", description: "Hubungkan nomor WhatsApp ke AI kamu." },
+  whatsapp: { title: "Channels", description: "Hubungkan channel bisnis ke AI kamu." },
   appsettings: { title: "Model & Harga", description: "Atur model AI dan perhitungan kredit." },
 };
 
@@ -608,6 +608,7 @@ export const setupRouteConfigs = {
   "/agents/setup": { view: "agents", tab: "instructions", anchor: "create-agent" },
   "/playground": { view: "playground" },
   "/whatsapp": { view: "whatsapp", anchor: "connect-whatsapp" },
+  "/channels": { view: "whatsapp", anchor: "connect-whatsapp" },
   "/escalation": { view: "whatsapp", anchor: "bind-escalation" },
 };
 
@@ -623,6 +624,7 @@ export function setupRouteConfigFromPath(pathname) {
 
 export function canonicalViewId(viewId) {
   if (viewId === "purchase") return "wallet";
+  if (viewId === "channels") return "whatsapp";
   return viewId;
 }
 
@@ -632,7 +634,7 @@ export function segmentForView(viewId) {
 
 export function pathForView(viewId) {
   if (viewId === "playground") return "/playground";
-  if (viewId === "whatsapp") return "/whatsapp";
+  if (viewId === "whatsapp") return "/channels";
   if (viewId === "dashboard") return "/dashboard";
   return `/dashboard/${segmentForView(viewId)}`;
 }

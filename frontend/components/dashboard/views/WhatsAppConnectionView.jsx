@@ -64,8 +64,8 @@ export function WhatsAppConnectionView({
     <>
       <div className="page-title-row">
         <div>
-          <div className="page-title">WhatsApp</div>
-            <div className="page-desc">Hubungkan nomor WhatsApp ke AI kamu.</div>
+          <div className="page-title">Channels</div>
+            <div className="page-desc">Hubungkan channel bisnis ke AI kamu dari satu tempat.</div>
         </div>
         <div className="page-actions">
           <button className="btn btn-secondary" onClick={handleRefreshStatus} disabled={isWaBusy}>

@@ -13,7 +13,7 @@ The old standalone repositories remain available as migration references. The mo
 
 ## Channel UX
 
-The dashboard uses a single Channel Center pattern. WhatsApp is the active production connector; Instagram and TikTok are represented as upcoming connectors until their official OAuth, permissions and webhook adapters are implemented. Do not label an upcoming channel as connected or route messages to it before its backend adapter is live.
+The dashboard uses a single Channel Center pattern at `/channels`. WhatsApp is the active production connector; Instagram and TikTok are represented as upcoming connectors until their official OAuth, permissions and webhook adapters are implemented. `/whatsapp` remains a compatibility route for existing bookmarks. Do not label an upcoming channel as connected or route messages to it before its backend adapter is live.
 
 ## Rules
 
