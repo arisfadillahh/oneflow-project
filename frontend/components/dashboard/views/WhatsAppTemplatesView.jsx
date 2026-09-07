@@ -1,3 +1,5 @@
+import { useState } from "react";
+
 const statusRank = { APPROVED: 0, PENDING: 1, REJECTED: 2 };
 
 function templateStatus(template) {
@@ -8,6 +10,7 @@ function templateStatus(template) {
 }
 
 export function WhatsAppTemplatesView({ activeSession, metaTemplates = [], metaTemplateForm, setMetaTemplateForm, metaTemplateSendForm, setMetaTemplateSendForm, loadMetaTemplates, createMetaTemplate, sendMetaTemplate, busyKey, navigateToChannels }) {
+  const [composerOpen, setComposerOpen] = useState(false);
   const templates = [...metaTemplates].sort((left, right) => {
     const rank = (statusRank[String(left?.status || "PENDING").toUpperCase()] ?? 1) - (statusRank[String(right?.status || "PENDING").toUpperCase()] ?? 1);
     return rank || String(left?.name || "").localeCompare(String(right?.name || ""));
@@ -27,20 +30,17 @@ export function WhatsAppTemplatesView({ activeSession, metaTemplates = [], metaT
       <div><div className="page-title">Template WhatsApp</div><div className="page-desc">Buat dan gunakan template resmi yang tersinkron langsung dengan WhatsApp Manager.</div></div>
       <div className="page-actions">
         <button className="btn btn-secondary" type="button" onClick={navigateToChannels}>Kembali ke Channels</button>
-        <button className="btn btn-primary" type="button" onClick={() => loadMetaTemplates?.(activeSession?.id)} disabled={busyKey === "wa-meta-template-list"}>{busyKey === "wa-meta-template-list" ? "Menyinkronkan..." : "Sinkronkan dengan Meta"}</button>
+        <button className="btn btn-secondary" type="button" onClick={() => loadMetaTemplates?.(activeSession?.id)} disabled={busyKey === "wa-meta-template-list"}>{busyKey === "wa-meta-template-list" ? "Menyinkronkan..." : "Sinkronkan"}</button>
+        <button className="btn btn-primary" type="button" onClick={() => setComposerOpen((current) => !current)}>{composerOpen ? "Tutup form" : "Tambah template"}</button>
       </div>
     </div>
 
-    <section className="wa-template-page-intro" aria-label="Ringkasan template WhatsApp">
-      <div><span className="badge green">WhatsApp resmi terhubung</span><h2>{activeSession?.label || "Koneksi WhatsApp"}</h2><p>Template approved bisa langsung dipakai. Pengajuan baru akan muncul sebagai sedang ditinjau sampai Meta menyelesaikan review.</p></div>
-      <div className="wa-template-sync-note"><span>Sumber data</span><strong>WhatsApp Manager</strong><small>Disinkronkan saat halaman dibuka</small></div>
-    </section>
-
-    <div className="wa-template-metrics" aria-label="Status template">
-      <div><strong>{approvedCount}</strong><span>Siap dipakai</span></div><div><strong>{pendingCount}</strong><span>Sedang ditinjau</span></div><div><strong>{rejectedCount}</strong><span>Ditolak</span></div>
+    <div className="wa-template-list-toolbar">
+      <div><span className="badge green">{activeSession?.label || "WhatsApp"}</span><strong>List template</strong><small>Data langsung dari WhatsApp Manager</small></div>
+      <div className="wa-template-list-counts"><span><b>{approvedCount}</b> siap dipakai</span><span><b>{pendingCount}</b> ditinjau</span>{rejectedCount ? <span><b>{rejectedCount}</b> ditolak</span> : null}</div>
     </div>
 
-    <div className="wa-template-workspace">
+    <div className={`wa-template-workspace ${composerOpen ? "with-composer" : ""}`}>
       <section className="card wa-template-library">
         <div className="card-header"><div><div className="card-title">Template dari Meta</div><div className="card-subtitle">Template approved ditampilkan lebih dulu dan siap dipakai.</div></div><span className="badge gray">{templates.length} template</span></div>
         <div className="wa-template-status-list">{templates.length ? templates.map((template) => {
@@ -54,7 +54,7 @@ export function WhatsAppTemplatesView({ activeSession, metaTemplates = [], metaT
         }) : <div className="wa-template-empty"><strong>Belum ada data template</strong><p>{busyKey === "wa-meta-template-list" ? "Sedang mengambil daftar terbaru dari Meta..." : "Sinkronkan untuk mengambil template dari WhatsApp Manager."}</p></div>}</div>
       </section>
 
-      <form className="card wa-meta-template-form wa-template-editor" onSubmit={createMetaTemplate}>
+      {composerOpen ? <form className="card wa-meta-template-form wa-template-editor" onSubmit={async (event) => { if (await createMetaTemplate?.(event)) setComposerOpen(false); }}>
         <div className="card-header"><div><div className="card-title">Buat template baru</div><div className="card-subtitle">Setelah diajukan, status review akan tampil di daftar Meta.</div></div></div>
         <label className="text-sm text-muted" htmlFor="meta-template-name">Nama template</label>
         <input id="meta-template-name" className="form-input" aria-label="Nama template" required pattern="[a-z0-9_]+" title="Gunakan huruf kecil, angka, dan underscore saja." placeholder="pesanan_dikonfirmasi" value={metaTemplateForm?.name || ""} onChange={(event) => setMetaTemplateForm?.({ ...(metaTemplateForm || {}), name: event.target.value.toLowerCase().replace(/[^a-z0-9_]/g, "_") })} />
@@ -64,7 +64,7 @@ export function WhatsAppTemplatesView({ activeSession, metaTemplates = [], metaT
         <textarea id="meta-template-body" className="form-input wa-meta-template-body" aria-label="Isi template" required maxLength={1024} placeholder="Halo {{1}}, pesanan kamu sudah dikonfirmasi." value={metaTemplateForm?.body || ""} onChange={(event) => setMetaTemplateForm?.({ ...(metaTemplateForm || {}), body: event.target.value })} />
         <div className="wa-template-form-help"><span>Gunakan {"{{1}}"}, {"{{2}}"}, dan seterusnya untuk data dinamis.</span><span>{String(metaTemplateForm?.body || "").length}/1024</span></div>
         <button className="btn btn-primary" type="submit" disabled={busyKey === "wa-meta-template-create"}>{busyKey === "wa-meta-template-create" ? "Mengajukan ke Meta..." : "Ajukan template"}</button>
-      </form>
+      </form> : null}
     </div>
 
     <form id="wa-template-test-send" className="card wa-meta-template-send wa-template-send-panel" onSubmit={sendMetaTemplate}>

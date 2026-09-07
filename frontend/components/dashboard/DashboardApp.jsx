@@ -96,10 +96,10 @@ const midtransSnapScripts = {
   production: "https://app.midtrans.com/snap/snap.js",
 };
 const mobileOperationsViews = {
-  owner: ["overview", "wallet", "usage", "health", "account", "whatsapp"],
-  super_admin: ["operations", "contacts", "agents", "playground", "upgrade", "deals", "tickets", "commerceOrders", "booking", "account", "whatsapp"],
-  admin: ["operations", "contacts", "agents", "playground", "upgrade", "deals", "tickets", "commerceOrders", "booking", "account", "whatsapp"],
-  operator: ["operations", "contacts", "agents", "playground", "upgrade", "deals", "tickets", "commerceOrders", "booking", "account", "whatsapp"],
+  owner: ["overview", "wallet", "usage", "health", "account", "whatsapp", "whatsappTemplates"],
+  super_admin: ["operations", "contacts", "agents", "playground", "upgrade", "deals", "tickets", "commerceOrders", "booking", "account", "whatsapp", "whatsappTemplates"],
+  admin: ["operations", "contacts", "agents", "playground", "upgrade", "deals", "tickets", "commerceOrders", "booking", "account", "whatsapp", "whatsappTemplates"],
+  operator: ["operations", "contacts", "agents", "playground", "upgrade", "deals", "tickets", "commerceOrders", "booking", "account", "whatsapp", "whatsappTemplates"],
 };
 const mobileRestrictedGuidance = {
   agents: {
@@ -2646,8 +2646,10 @@ export default function DashboardApp() {
       showToast({ title: "Template diajukan", message: "Template dikirim ke Meta untuk ditinjau." });
       setMetaTemplateForm({ name: "", category: "UTILITY", language: "id", body: "" });
       await loadMetaTemplates(activeWaSessionId);
+      return true;
     } catch (templateError) {
       setError(templateError.message);
+      return false;
     } finally {
       setBusyKey("");
     }

@@ -11,6 +11,8 @@ test("WhatsApp templates are presented as a synced status list without wizard st
   assert.match(viewSource, /Sedang ditinjau/);
   assert.match(viewSource, /Ditolak/);
   assert.match(viewSource, /Pakai template/);
+  assert.match(viewSource, /Tambah template/);
+  assert.match(viewSource, /List template/);
 });
 
 test("WhatsApp templates sync automatically when the page opens", () => {

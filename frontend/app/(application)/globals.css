@@ -17069,12 +17069,18 @@ html[data-dashboard-theme="dark"] .agent-create-modal .modal-footer {
 .wa-template-sync-note { min-width:190px; padding-left:24px; border-left:1px solid var(--gray-200); }
 .wa-template-sync-note span, .wa-template-sync-note small { display:block; color:var(--text-muted); font-size:12px; }
 .wa-template-sync-note strong { display:block; margin:4px 0; font-size:15px; }
+.wa-template-list-toolbar { display:flex; align-items:center; justify-content:space-between; gap:18px; margin-bottom:16px; padding:14px 16px; border:1px solid var(--gray-200); border-radius:8px; background:var(--white); }
+.wa-template-list-toolbar > div:first-child { display:flex; align-items:center; flex-wrap:wrap; gap:10px; }
+.wa-template-list-toolbar small { color:var(--gray-500); }
+.wa-template-list-counts { display:flex; flex-wrap:wrap; justify-content:flex-end; gap:14px; color:var(--gray-600); font-size:12px; }
+.wa-template-list-counts b { color:var(--gray-900); }
 .wa-template-metrics { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); margin-bottom:16px; border:1px solid var(--gray-200); border-radius:8px; background:var(--white); }
 .wa-template-metrics > div { display:flex; align-items:baseline; gap:8px; min-width:0; padding:14px 18px; }
 .wa-template-metrics > div + div { border-left:1px solid var(--gray-200); }
 .wa-template-metrics strong { font-size:22px; }
 .wa-template-metrics span { color:var(--text-muted); font-size:13px; }
-.wa-template-workspace { display:grid; grid-template-columns:minmax(0,1.55fr) minmax(320px,.8fr); gap:16px; align-items:start; }
+.wa-template-workspace { display:grid; grid-template-columns:1fr; gap:16px; align-items:start; }
+.wa-template-workspace.with-composer { grid-template-columns:minmax(0,1.55fr) minmax(320px,.8fr); }
 .wa-template-editor, .wa-template-library, .wa-template-send-panel { display:flex; flex-direction:column; gap:12px; }
 .wa-template-status-list { display:flex; flex-direction:column; gap:8px; max-height:680px; overflow:auto; padding-right:3px; }
 .wa-meta-template-item { display:flex; align-items:center; justify-content:space-between; gap:16px; padding:14px; border:1px solid var(--gray-200); border-radius:8px; background:var(--gray-50); }
@@ -17090,8 +17096,8 @@ html[data-dashboard-theme="dark"] .agent-create-modal .modal-footer {
 .wa-template-send-panel { margin-top:16px; }
 .wa-template-send-fields { display:grid; grid-template-columns:minmax(180px,.8fr) minmax(240px,1.4fr) minmax(120px,.5fr); gap:12px; }
 .wa-template-send-fields label, .wa-meta-template-row label { display:flex; flex-direction:column; gap:6px; }
-@media (max-width:900px) { .wa-template-workspace { grid-template-columns:1fr; } .wa-template-send-fields { grid-template-columns:1fr 1fr; } }
-@media (max-width:760px) { .wa-template-page-intro { align-items:flex-start; flex-direction:column; } .wa-template-sync-note { width:100%; padding:16px 0 0; border-top:1px solid var(--gray-200); border-left:0; } .wa-template-metrics { grid-template-columns:1fr; } .wa-template-metrics > div + div { border-top:1px solid var(--gray-200); border-left:0; } .wa-template-send-fields { grid-template-columns:1fr; } .wa-meta-template-item { align-items:flex-start; flex-direction:column; } .wa-meta-template-item .btn { width:100%; } }
+@media (max-width:900px) { .wa-template-workspace.with-composer { grid-template-columns:1fr; } .wa-template-send-fields { grid-template-columns:1fr 1fr; } }
+@media (max-width:760px) { .wa-template-page-intro { align-items:flex-start; flex-direction:column; } .wa-template-sync-note { width:100%; padding:16px 0 0; border-top:1px solid var(--gray-200); border-left:0; } .wa-template-list-toolbar { align-items:flex-start; flex-direction:column; } .wa-template-list-counts { justify-content:flex-start; } .wa-template-metrics { grid-template-columns:1fr; } .wa-template-metrics > div + div { border-top:1px solid var(--gray-200); border-left:0; } .wa-template-send-fields { grid-template-columns:1fr; } .wa-meta-template-item { align-items:flex-start; flex-direction:column; } .wa-meta-template-item .btn { width:100%; } }
 
 .dashboard-shell.theme-dark .btn-primary {
   color: #081426;
