@@ -37,6 +37,15 @@ Every deployment must record:
 
 Do not call a release synchronized only because the page returns HTTP 200. Compiled assets, feature behavior and responsive UI must be checked.
 
+## Release record: frontend security patches 2026-09-09
+
+- Scope: upgraded Next.js from `15.5.18` to `15.5.25`, PostCSS to `8.5.23`, and the transitive Sharp runtime to `0.35.4` without changing application behavior.
+- Security verification: `npm audit --audit-level=low` reports zero vulnerabilities, down from one critical and three high-severity findings.
+- Functional verification: frontend tests passed 44/44 and the production build passed with 25 routes.
+- Frontend image: `oneflow-dashboard-web:security-patches-v6-20260909`, image ID `sha256:8e060eb4967bd3cede6f44a4be418c3087a79abac57bfc640cd9a245e2dac7d5`.
+- Compose backup: `/home/goffath/oneflow-deploy/docker-compose.before-security-patches-v6-20260909.yml`.
+- Production checks: dashboard container healthy; `/`, `/dashboard/inbox`, `/channels`, and `/health` returned HTTP 200. Backend and other services were not recreated.
+
 ## Release record: Instagram Inbox and permission validation 2026-09-09
 
 - Repository: `https://github.com/arisfadillahh/oneflow-project`; deployment used the intentional Instagram working tree from the monorepo source of truth.

@@ -12,12 +12,12 @@
   },
   "dependencies": {
     "lucide-static": "^1.16.0",
-    "next": "^15.5.18",
+    "next": "^15.5.25",
     "qrcode": "^1.5.4",
     "react": "19.1.0",
     "react-dom": "19.1.0"
   },
   "overrides": {
-    "postcss": "8.5.10"
+    "postcss": "8.5.23"
   }
 }
