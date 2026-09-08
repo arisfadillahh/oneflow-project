@@ -52,7 +52,7 @@ export function WhatsAppConnectionView({
   templateToolsOnSeparatePage = false
 }) {
   const [instagramAgentId, setInstagramAgentId] = useState("");
-  const [selectedChannel, setSelectedChannel] = useState("whatsapp");
+  const [setupChannel, setSetupChannel] = useState("");
   const hasSessions = sessions.length > 0;
   const hasAIAgents = aiAgents.some((agent) => agent.isActive !== false);
   const isWaBusy = String(busyKey || "").startsWith("wa-");
@@ -68,6 +68,8 @@ export function WhatsAppConnectionView({
   const activeInstagramAgents = aiAgents.filter((agent) => agent.isActive !== false);
   const selectedInstagramAgentId = instagramAgentId || activeInstagramAgents[0]?.id || "";
   const isInstagramBusy = String(busyKey || "").startsWith("instagram-");
+  const connectedWhatsAppCount = sessions.filter((item) => item.status === "connected").length;
+  const connectedChannelCount = Number(connectedWhatsAppCount > 0) + Number(instagramSessions.length > 0);
   const handleRefreshStatus = () => refreshAll?.();
   const openQrForSession = (sessionId) => {
     if (sessionId && officialWhatsAppEnabled) connectOfficialWhatsApp?.(sessionId);
@@ -77,8 +79,8 @@ export function WhatsAppConnectionView({
     <>
       <div className="page-title-row">
         <div>
-          <div className="page-title">Channels</div>
-          <div className="page-desc">Pilih tempat pelanggan menghubungi bisnismu. Oneflow akan memandu sisanya.</div>
+          <div className="page-title">Tempat chat pelanggan</div>
+          <div className="page-desc">Lihat WhatsApp dan Instagram bisnismu dalam satu halaman.</div>
         </div>
         <div className="page-actions">
           <button className="btn btn-secondary" onClick={handleRefreshStatus} disabled={isWaBusy}>
@@ -91,26 +93,27 @@ export function WhatsAppConnectionView({
       <div className="channel-picker" aria-label="Pilih channel bisnis">
         <div className="card-header">
           <div>
-            <div className="card-title">Mau menghubungkan channel apa?</div>
-            <div className="card-subtitle">Pilih satu. Kamu bisa kembali dan menambahkan channel lain kapan saja.</div>
+            <div className="card-title">Koneksi bisnismu</div>
+            <div className="card-subtitle">Status "Aktif" berarti pesan pelanggan sudah bisa masuk ke Inbox Oneflow.</div>
           </div>
+          <span className={`badge ${connectedChannelCount ? "green" : "gray"}`}>{connectedChannelCount} aktif</span>
         </div>
         <div className="channel-center-grid">
-          <button type="button" className={`channel-center-item ${selectedChannel === "whatsapp" ? "is-selected" : ""}`} onClick={() => setSelectedChannel("whatsapp")} aria-pressed={selectedChannel === "whatsapp"}>
+          <button type="button" className={`channel-center-item ${setupChannel === "whatsapp" ? "is-selected" : ""}`} onClick={() => setSetupChannel(setupChannel === "whatsapp" ? "" : "whatsapp")} aria-expanded={setupChannel === "whatsapp"}>
             <div className="channel-center-icon channel-icon-wa">WA</div>
             <div className="channel-center-copy">
               <strong>WhatsApp</strong>
               <span>Terima dan balas chat WhatsApp Business.</span>
             </div>
-            <span className={`badge ${sessions.some((item) => item.status === "connected") ? "green" : "blue"}`}>{sessions.some((item) => item.status === "connected") ? "Terhubung" : "Hubungkan"}</span>
+            <span className={`badge ${connectedWhatsAppCount ? "green" : "blue"}`}>{connectedWhatsAppCount ? "Aktif · Kelola" : "Belum aktif · Hubungkan"}</span>
           </button>
-          <button type="button" className={`channel-center-item ${selectedChannel === "instagram" ? "is-selected" : ""}`} onClick={() => setSelectedChannel("instagram")} aria-pressed={selectedChannel === "instagram"}>
+          <button type="button" className={`channel-center-item ${setupChannel === "instagram" ? "is-selected" : ""}`} onClick={() => setSetupChannel(setupChannel === "instagram" ? "" : "instagram")} aria-expanded={setupChannel === "instagram"}>
             <div className="channel-center-icon channel-icon-ig">IG</div>
             <div className="channel-center-copy">
               <strong>Instagram</strong>
               <span>Terima dan balas DM akun profesional.</span>
             </div>
-            <span className={`badge ${instagramSessions.length ? "green" : "blue"}`}>{instagramSessions.length ? "Terhubung" : "Hubungkan"}</span>
+            <span className={`badge ${instagramSessions.length ? "green" : "blue"}`}>{instagramSessions.length ? "Aktif · Kelola" : "Belum aktif · Hubungkan"}</span>
           </button>
           <div className="channel-center-item is-disabled" aria-disabled="true">
             <div className="channel-center-icon channel-icon-tt">TT</div>
@@ -121,15 +124,17 @@ export function WhatsAppConnectionView({
             <span className="badge gray">Segera hadir</span>
           </div>
         </div>
+        {!setupChannel ? <p className="channel-overview-help">Klik WhatsApp atau Instagram hanya jika ingin menghubungkan atau mengubah pengaturannya.</p> : null}
       </div>
 
-      {selectedChannel === "instagram" ? <div className="card channel-setup-card" style={{ marginBottom: "24px" }}>
+      {setupChannel === "instagram" ? <div className="card channel-setup-card" style={{ marginBottom: "24px" }}>
         <div className="card-header">
           <div>
             <div className="channel-setup-eyebrow">Instagram</div>
             <div className="card-title">{instagramSessions.length ? "Instagram sudah terhubung" : "Hubungkan Instagram"}</div>
             <div className="card-subtitle">{instagramSessions.length ? "DM pelanggan akan masuk ke Inbox Oneflow." : "Pilih AI yang akan menjawab, lalu login ke Instagram. Tidak perlu menyalin token atau mengatur webhook."}</div>
           </div>
+          <button className="btn btn-ghost btn-sm" type="button" onClick={() => setSetupChannel("")}>Tutup</button>
         </div>
         {canManageInstagram && !instagramSessions.length ? (
           <div className="channel-connect-form">
@@ -167,7 +172,7 @@ export function WhatsAppConnectionView({
         </div>
       ) : null}
 
-      {selectedChannel === "whatsapp" ? <>
+      {setupChannel === "whatsapp" ? <>
       {!isWhatsAppIncluded ? (
         <div className="notice warning" style={{ marginBottom: "16px" }}>
           <div>
@@ -193,7 +198,10 @@ export function WhatsAppConnectionView({
             <div className="card-title">{sessions.some((item) => item.status === "connected") ? "WhatsApp sudah terhubung" : "Hubungkan WhatsApp Business"}</div>
             <div className="card-subtitle">{sessions.some((item) => item.status === "connected") ? "Chat pelanggan akan masuk ke Inbox Oneflow. Aplikasi WhatsApp Business tetap bisa digunakan." : "Gunakan koneksi resmi Meta. Riwayat chat dan aplikasi WhatsApp Business tidak perlu dihapus."}</div>
           </div>
-          {canManageOfficialTemplates && isConnected ? <button className="btn btn-secondary btn-sm" type="button" onClick={navigateToTemplates}>Template pesan</button> : null}
+          <div className="row-actions">
+            {canManageOfficialTemplates && isConnected ? <button className="btn btn-secondary btn-sm" type="button" onClick={navigateToTemplates}>Template pesan</button> : null}
+            <button className="btn btn-ghost btn-sm" type="button" onClick={() => setSetupChannel("")}>Tutup</button>
+          </div>
         </div>
         {!isWhatsAppAtLimit ? <form className="channel-connect-form channel-connect-form-wa" onSubmit={createSession}>
           <label className="form-group"><span className="form-label">Nama koneksi</span><input className="form-input" placeholder="Contoh: WhatsApp Toko Jakarta" value={sessionForm?.label || ""} onChange={(event) => setSessionForm?.({ ...(sessionForm || {}), label: event.target.value })} disabled={!canCreateWhatsApp} /></label>

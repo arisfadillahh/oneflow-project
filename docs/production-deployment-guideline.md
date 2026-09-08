@@ -37,6 +37,16 @@ Every deployment must record:
 
 Do not call a release synchronized only because the page returns HTTP 200. Compiled assets, feature behavior and responsive UI must be checked.
 
+## Release record: single-page Channels overview 2026-09-09
+
+- Scope: replaced the channel-tab interaction with one connection overview that shows WhatsApp, Instagram and TikTok statuses together. No setup panel is open by default.
+- Beginner flow: users only need to understand whether a channel is active; clicking WhatsApp or Instagram expands its settings inline on the same page, and `Tutup` returns to the overview.
+- Behavior preserved: official Meta connection, AI assignment, Instagram validation/disconnect, WhatsApp session management, templates, package limits and recovery actions remain available. No backend service was changed or recreated.
+- Verification: frontend tests passed 45/45, production build passed with 25 routes, and `npm audit --audit-level=low` reported zero vulnerabilities.
+- Frontend image: `oneflow-dashboard-web:channels-overview-v8-20260909`, image ID and local digest `sha256:10dd9314cabe2b8683c299ab1b0a427dccdaa6f577537e91fc27e4f4a2919347`.
+- Compose backup: `/home/goffath/oneflow-deploy/docker-compose.before-channels-overview-v8-20260909.yml`.
+- Production QA: container healthy; `/health`, `/channels`, and `/dashboard/inbox` returned HTTP 200; account `qwe` showed both connected channels in one overview; Instagram settings expanded inline and collapsed through `Tutup` without navigation.
+
 ## Release record: novice-friendly Channels UX 2026-09-09
 
 - Scope: replaced simultaneous WhatsApp/Instagram setup panels and the global WhatsApp progress strip with an explicit channel picker and one setup flow at a time.

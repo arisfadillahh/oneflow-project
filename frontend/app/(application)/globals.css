@@ -7822,6 +7822,12 @@ tbody tr:last-child td { border-bottom: none; }
 
 .channel-center-note { margin: 14px 0 0; }
 
+.channel-overview-help {
+  margin: 12px 0 0;
+  color: var(--gray-500);
+  font-size: 12px;
+}
+
 .channel-setup-card {
   overflow: visible;
 }

@@ -22,13 +22,14 @@ test("Channels gives Instagram a real connect flow instead of coming-soon copy",
   assert.match(channelSource, /Hubungkan Instagram/);
   assert.match(channelSource, /Lanjutkan dengan Instagram/);
   assert.match(channelSource, /Cek koneksi/);
-  assert.match(channelSource, /instagramSessions\.length \? "Terhubung" : "Hubungkan"/);
+  assert.match(channelSource, /instagramSessions\.length \? "Aktif · Kelola" : "Belum aktif · Hubungkan"/);
   assert.doesNotMatch(channelSource, /<strong>Instagram<\/strong>[\s\S]{0,250}Segera hadir/);
 });
 
 test("Channels reveals one novice-friendly setup flow at a time", () => {
-  assert.match(channelSource, /selectedChannel === "instagram"/);
-  assert.match(channelSource, /selectedChannel === "whatsapp"/);
-  assert.match(channelSource, /Mau menghubungkan channel apa\?/);
+  assert.match(channelSource, /setupChannel === "instagram"/);
+  assert.match(channelSource, /setupChannel === "whatsapp"/);
+  assert.match(channelSource, /Koneksi bisnismu/);
+  assert.match(channelSource, /Status "Aktif" berarti pesan pelanggan sudah bisa masuk/);
   assert.doesNotMatch(channelSource, /className="wa-flow-strip"/);
 });
