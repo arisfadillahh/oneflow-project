@@ -24,6 +24,7 @@ test("inbox exposes unread state without relying on color alone", async () => {
   assert.match(view, /inbox-unread-dot/, "Unread rows need an explicit visual marker.");
   assert.match(view, /aria-label=.*inbox\.readCount/, "Unread state needs an accessible text label.");
   assert.match(css, /\.inbox-item\.is-unread/, "Unread rows need dedicated styling.");
+  assert.match(css, /\.inbox-tabs\s*\{[\s\S]*?grid-template-columns:\s*repeat\(6, minmax\(0, 1fr\)\)/, "Mobile inbox filters must fit without horizontal scrolling.");
 });
 
 test("account language supports Indonesian and English with server persistence", async () => {

@@ -3921,12 +3921,24 @@ tbody tr:last-child td { border-bottom: none; }
   }
 
   .inbox-tabs {
-    overflow-x: auto;
-    padding-bottom: 2px;
+    display: grid;
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    gap: 4px;
+    overflow: visible;
+    padding-bottom: 0;
   }
 
   .inbox-tab {
-    flex: 0 0 auto;
+    grid-column: span 2;
+    min-width: 0;
+    min-height: 34px;
+    padding: 6px 5px;
+    white-space: nowrap;
+  }
+
+  .inbox-tab:nth-child(4),
+  .inbox-tab:nth-child(5) {
+    grid-column: span 3;
   }
 
   .chat-header {

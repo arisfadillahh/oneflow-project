@@ -51,6 +51,14 @@ Do not call a release synchronized only because the page returns HTTP 200. Compi
 - Browser QA: opening a chat cleared its per-agent unread badge; English persisted after reload; the test account was restored to Indonesian; narrow-screen dark Inbox and the compact WhatsApp window status rendered without overlap.
 - Public route checks: `/`, `/dashboard/inbox`, `/dashboard/account`, `/channels`, `/whatsapp/templates`, and `/health` returned HTTP 200; unauthenticated `/api/me` correctly returned HTTP 401.
 
+## Release record: Mobile Inbox filters 2026-09-08
+
+- Change: replaced the clipped horizontal Inbox status strip with a stable three-plus-two mobile grid.
+- Local checks: frontend tests passed 41/41 and the Next.js production build passed.
+- Frontend image: `oneflow-dashboard-web:inbox-mobile-filters-20260908`, image ID `sha256:a6954a234202ddd076e65a8568b376f9013087e2ee977718762c5f95febcff47`.
+- Compose backup: `/home/goffath/oneflow-deploy/docker-compose.before-inbox-mobile-filters-20260908.yml`.
+- Production QA: dashboard container healthy, `/dashboard/inbox` returned HTTP 200, and all five filters were visible without horizontal overflow in the narrow dark-mode viewport.
+
 ## Release record: 2026-09-07
 
 - Source: `oneflow-frontend` working tree used for the verified local build.
