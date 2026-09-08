@@ -53,11 +53,12 @@ Do not call a release synchronized only because the page returns HTTP 200. Compi
 
 ## Release record: Mobile Inbox filters 2026-09-08
 
-- Change: replaced the clipped horizontal Inbox status strip with a stable three-plus-two mobile grid.
+- Change: replaced the clipped horizontal Inbox status strip with a stable three-plus-two grid based on the Inbox column width, including narrow desktop panels.
 - Local checks: frontend tests passed 41/41 and the Next.js production build passed.
 - Frontend image: `oneflow-dashboard-web:inbox-mobile-filters-20260908`, image ID `sha256:a6954a234202ddd076e65a8568b376f9013087e2ee977718762c5f95febcff47`.
 - Compose backup: `/home/goffath/oneflow-deploy/docker-compose.before-inbox-mobile-filters-20260908.yml`.
 - Production QA: dashboard container healthy, `/dashboard/inbox` returned HTTP 200, and all five filters were visible without horizontal overflow in the narrow dark-mode viewport.
+- Final frontend image: `oneflow-dashboard-web:inbox-panel-filters-20260908`, image ID `sha256:5673f5407f9b` (full digest recorded by Docker on the host).
 
 ## Release record: 2026-09-07
 

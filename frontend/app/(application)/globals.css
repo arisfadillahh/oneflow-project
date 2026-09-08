@@ -3438,12 +3438,16 @@ tbody tr:last-child td { border-bottom: none; }
 }
 
 .inbox-tabs {
-  display: flex;
-  gap: 2px;
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 4px;
 }
 
 .inbox-tab {
-  padding: 5px 10px;
+  grid-column: span 2;
+  min-width: 0;
+  min-height: 34px;
+  padding: 6px 5px;
   border: 0;
   border-radius: 6px;
   background: transparent;
@@ -3452,6 +3456,12 @@ tbody tr:last-child td { border-bottom: none; }
   font-size: 12px;
   font-weight: 500;
   font-family: inherit;
+  white-space: nowrap;
+}
+
+.inbox-tab:nth-child(4),
+.inbox-tab:nth-child(5) {
+  grid-column: span 3;
 }
 
 .inbox-tab.active {
