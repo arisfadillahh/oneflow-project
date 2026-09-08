@@ -37,6 +37,16 @@ Every deployment must record:
 
 Do not call a release synchronized only because the page returns HTTP 200. Compiled assets, feature behavior and responsive UI must be checked.
 
+## Release record: novice-friendly Channels UX 2026-09-09
+
+- Scope: replaced simultaneous WhatsApp/Instagram setup panels and the global WhatsApp progress strip with an explicit channel picker and one setup flow at a time.
+- Behavior preserved: official Meta connection, AI assignment, Instagram validation/disconnect, WhatsApp session management, templates, package limits and recovery actions remain available.
+- UX changes: plain-language labels, a single primary action, connected-account summaries, technical WhatsApp session controls inside an expandable management section, and responsive stacked controls on narrow screens.
+- Verification: frontend tests passed 45/45, production build passed with 25 routes, and `npm audit --audit-level=low` reported zero vulnerabilities.
+- Frontend image: `oneflow-dashboard-web:channels-ux-v7-20260909`, image ID `sha256:c588346fcd1f4025a5e020cb301aa718d871c32e0315279271f0ff9e59c95982`.
+- Compose backup: `/home/goffath/oneflow-deploy/docker-compose.before-channels-ux-v7-20260909.yml`.
+- Production QA: container healthy; `/channels` and `/health` returned HTTP 200; account `qwe` could switch between WhatsApp and Instagram panels; connected `@itsoneflow` rendered correctly; light and dark themes were visually checked.
+
 ## Release record: frontend security patches 2026-09-09
 
 - Scope: upgraded Next.js from `15.5.18` to `15.5.25`, PostCSS to `8.5.23`, and the transitive Sharp runtime to `0.35.4` without changing application behavior.

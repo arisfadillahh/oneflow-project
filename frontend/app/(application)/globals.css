@@ -7746,6 +7746,12 @@ tbody tr:last-child td { border-bottom: none; }
   gap: 12px;
 }
 
+.channel-picker {
+  margin-bottom: 18px;
+  padding: 18px 20px 20px;
+  border-bottom: 1px solid var(--gray-200);
+}
+
 .channel-center-item {
   display: flex;
   align-items: center;
@@ -7755,11 +7761,27 @@ tbody tr:last-child td { border-bottom: none; }
   border: 1px solid var(--gray-200);
   border-radius: 8px;
   background: var(--gray-50);
+  color: var(--gray-800);
+  text-align: left;
+  font: inherit;
+  cursor: pointer;
+  transition: border-color 160ms ease, background-color 160ms ease, box-shadow 160ms ease;
 }
 
-.channel-center-item.is-active {
-  border-color: #74a7f7;
-  background: #f4f8ff;
+.channel-center-item:not(.is-disabled):hover {
+  border-color: var(--blue-border);
+  background: var(--blue-light);
+}
+
+.channel-center-item.is-selected {
+  border-color: var(--blue);
+  background: var(--blue-light);
+  box-shadow: 0 0 0 2px rgba(47, 151, 246, 0.1);
+}
+
+.channel-center-item.is-disabled {
+  cursor: default;
+  opacity: 0.72;
 }
 
 .channel-center-icon {
@@ -7800,9 +7822,109 @@ tbody tr:last-child td { border-bottom: none; }
 
 .channel-center-note { margin: 14px 0 0; }
 
+.channel-setup-card {
+  overflow: visible;
+}
+
+.channel-setup-eyebrow {
+  margin-bottom: 4px;
+  color: var(--blue);
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.channel-connect-form {
+  display: grid;
+  grid-template-columns: minmax(260px, 1fr) auto;
+  align-items: end;
+  gap: 12px;
+  max-width: 850px;
+  padding: 4px 16px 18px;
+}
+
+.channel-connect-form-wa {
+  grid-template-columns: minmax(220px, 1fr) minmax(220px, 1fr) auto;
+}
+
+.channel-connect-form .form-group {
+  margin: 0;
+}
+
+.channel-connect-action {
+  min-height: 40px;
+  white-space: nowrap;
+}
+
+.channel-connect-help {
+  grid-column: 1 / -1;
+  margin: -2px 0 0;
+  color: var(--gray-500);
+  font-size: 12px;
+}
+
+.channel-connection-summary {
+  display: grid;
+  grid-template-columns: auto minmax(180px, 1fr) minmax(170px, auto) auto;
+  align-items: center;
+  gap: 14px;
+  margin: 4px 16px 18px;
+  padding: 14px;
+  border: 1px solid var(--gray-200);
+  border-radius: 8px;
+  background: var(--gray-50);
+}
+
+.channel-account-mark {
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 8px;
+  color: #fff;
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.channel-connection-main,
+.channel-connection-state {
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+}
+
+.channel-connection-main span,
+.channel-connection-state > span:last-child {
+  color: var(--gray-500);
+  font-size: 12px;
+}
+
+.channel-advanced {
+  margin: 2px 16px 18px;
+  border-top: 1px solid var(--gray-200);
+}
+
+.channel-advanced summary {
+  padding: 14px 2px;
+  color: var(--gray-700);
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
 @media (max-width: 760px) {
   .channel-center-grid { grid-template-columns: 1fr; }
   .channel-center-item { min-height: 56px; }
+  .channel-picker { padding: 14px 0 16px; }
+  .channel-connect-form,
+  .channel-connect-form-wa { grid-template-columns: 1fr; padding-inline: 0; }
+  .channel-connect-action { width: 100%; }
+  .channel-connection-summary { grid-template-columns: auto minmax(0, 1fr); margin-inline: 0; }
+  .channel-connection-state,
+  .channel-connection-summary .row-actions { grid-column: 1 / -1; }
+  .channel-connection-summary .row-actions { display: grid; grid-template-columns: 1fr 1fr; }
+  .channel-connection-summary .row-actions .btn { width: 100%; }
+  .channel-advanced { margin-inline: 0; }
 }
 
 .wa-top-grid {
@@ -17385,6 +17507,29 @@ html[data-dashboard-theme="dark"] .agent-chat-bubble.assistant strong,
 html[data-dashboard-theme="dark"] .agent-conversation-head strong,
 html[data-dashboard-theme="dark"] .agent-chat-input span {
   color: var(--gray-900);
+}
+
+.dashboard-shell.theme-dark .channel-picker {
+  border-color: var(--gray-200);
+}
+
+.dashboard-shell.theme-dark .channel-center-item,
+.dashboard-shell.theme-dark .channel-connection-summary {
+  background: var(--surface-2);
+  border-color: var(--gray-200);
+  color: var(--gray-800);
+}
+
+.dashboard-shell.theme-dark .channel-center-item:not(.is-disabled):hover,
+.dashboard-shell.theme-dark .channel-center-item.is-selected {
+  background: var(--blue-light);
+  border-color: var(--blue-border);
+}
+
+.dashboard-shell.theme-dark .channel-advanced,
+.dashboard-shell.theme-dark .channel-advanced summary {
+  border-color: var(--gray-200);
+  color: var(--gray-800);
 }
 
 html[data-dashboard-theme="dark"] .agent-chat-bubble.assistant span,

@@ -8,12 +8,12 @@ const config = { enabled: true, onboardingMode: "coexistence", appId: "123", con
 test("connection UI offers official WhatsApp only without legacy QR or group binding", () => {
   const source = readFileSync(new URL("../components/dashboard/views/WhatsAppConnectionView.jsx", import.meta.url), "utf8");
   assert.doesNotMatch(source, /value="whatsmeow"|Scan QR|qrModalOpen|bindModalOpen/);
-  assert.match(source, /Meta Coexistence/);
+  assert.match(source, /Gunakan koneksi resmi Meta/);
 });
 
-test("official WhatsApp form has a single-column mobile layout", () => {
+test("official channel forms have a single-column mobile layout", () => {
   const css = readFileSync(new URL("../app/(application)/globals.css", import.meta.url), "utf8");
-  assert.match(css, /@media \(max-width: 1024px\)\s*\{\s*\.wa-device-form\s*\{\s*grid-template-columns: minmax\(0, 1fr\)/);
+  assert.match(css, /\.channel-connect-form,\s*\.channel-connect-form-wa \{ grid-template-columns: 1fr;/);
   assert.match(css, /\.topbar \.company-selector\s*\{\s*display: none;/);
 });
 
