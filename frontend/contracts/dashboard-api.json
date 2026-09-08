@@ -24,6 +24,7 @@
     { "id": "analytics", "pathPattern": "^/api/analytics(?:/.*)?$", "auth": "required" },
     { "id": "team", "pathPattern": "^/api/team(?:/.*)?$", "auth": "required" },
     { "id": "whatsapp", "pathPattern": "^/api/whatsapp(?:/.*)?$", "auth": "required", "notes": "Includes Meta Cloud onboarding/template operations through app-backend." },
+    { "id": "instagram", "pathPattern": "^/api/instagram(?:/.*)?$", "auth": "mixed", "notes": "OAuth start and session management require authentication; OAuth callback and signed webhook are public provider callbacks." },
     { "id": "business-tools", "pathPattern": "^/api/business-tools(?:/.*)?$", "auth": "required" },
     { "id": "commerce", "pathPattern": "^/api/commerce(?:/.*)?$", "auth": "required" },
     { "id": "booking", "pathPattern": "^/api/booking(?:/.*)?$", "auth": "required" },

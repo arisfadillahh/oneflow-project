@@ -232,6 +232,8 @@ func (s *Server) Routes() http.Handler {
 	mux.Handle("/api/internal/wa/echo", s.internalAuth(s.rateLimitedHandler(s.internalLimit, "internal:wa_echo", http.HandlerFunc(s.handleInternalWAEcho))))
 	mux.Handle("/api/internal/wa/group-binding", s.internalAuth(s.rateLimitedHandler(s.internalLimit, "internal:wa_group_binding", http.HandlerFunc(retiredLegacyEndpoint))))
 	mux.HandleFunc("/api/payments/midtrans/notification", s.handleMidtransNotification)
+	mux.HandleFunc("/api/instagram/oauth/callback", s.handleInstagramOAuthCallback)
+	mux.HandleFunc("/api/instagram/webhook", s.handleInstagramWebhook)
 	mux.Handle("/api/me", s.auth(http.HandlerFunc(s.handleMe)))
 	mux.Handle("/api/organizations", s.auth(http.HandlerFunc(s.handleOrganizations)))
 	mux.Handle("/api/organizations/switch", s.auth(http.HandlerFunc(s.handleOrganizationSwitch)))
@@ -322,6 +324,9 @@ func (s *Server) Routes() http.Handler {
 	mux.Handle("/api/whatsapp/sessions", s.auth(http.HandlerFunc(s.handleWhatsAppSessions)))
 	mux.Handle("/api/whatsapp/sessions/", s.auth(http.HandlerFunc(s.handleWhatsAppSessionRoutes)))
 	mux.Handle("/api/whatsapp/meta/config", s.auth(http.HandlerFunc(s.handleMetaCloudConfig)))
+	mux.Handle("/api/instagram/sessions", s.auth(http.HandlerFunc(s.handleInstagramSessions)))
+	mux.Handle("/api/instagram/sessions/", s.auth(http.HandlerFunc(s.handleInstagramSessionRoutes)))
+	mux.Handle("/api/instagram/oauth/start", s.auth(http.HandlerFunc(s.handleInstagramOAuthStart)))
 	mux.Handle("/api/conversations/", s.auth(http.HandlerFunc(s.handleConversationRoutes)))
 	return securityHeaders(cors(mux, s.cfg.WebsocketAllowedOrigins))
 }
@@ -1644,9 +1649,10 @@ func (s *Server) handleInbox(w http.ResponseWriter, r *http.Request) {
 		  ct.phone,
 		  c.mode::text,
 		  c.status::text,
-		  COALESCE(c.whatsapp_session_id::text, ''),
-		  COALESCE(ws.label, ''),
-		  COALESCE(ws.provider, 'whatsmeow'),
+		  c.channel,
+		  COALESCE(c.whatsapp_session_id::text, c.instagram_session_id::text, ''),
+		  COALESCE(ws.label, NULLIF('@' || igs.username, '@'), ''),
+		  COALESCE(ws.provider, CASE WHEN c.channel = 'instagram' THEN 'instagram' ELSE 'whatsmeow' END),
 		  COALESCE(c.ai_agent_id::text, ''),
 		  COALESCE(aa.name, ''),
 		  COALESCE(a.id::text, ''),
@@ -1664,6 +1670,7 @@ func (s *Server) handleInbox(w http.ResponseWriter, r *http.Request) {
 		FROM conversations c
 		JOIN contacts ct ON ct.id = c.contact_id AND ct.organization_id = c.organization_id
 		LEFT JOIN whatsapp_sessions ws ON ws.id = c.whatsapp_session_id AND ws.organization_id = c.organization_id
+		LEFT JOIN instagram_sessions igs ON igs.id = c.instagram_session_id AND igs.organization_id = c.organization_id
 		LEFT JOIN ai_agents aa ON aa.id = c.ai_agent_id AND aa.organization_id = c.organization_id
 		LEFT JOIN agents a ON a.id = c.assigned_to
 		LEFT JOIN messages m ON m.id = c.last_message_id AND m.organization_id = c.organization_id
@@ -1709,7 +1716,7 @@ func (s *Server) handleInbox(w http.ResponseWriter, r *http.Request) {
 		    AND organization_id = c.organization_id
 		    AND direction = 'inbound'
 		) inbound ON TRUE
-		WHERE c.channel = 'whatsapp' AND c.organization_id = $1
+		WHERE c.channel IN ('whatsapp', 'instagram') AND c.organization_id = $1
 		ORDER BY c.last_message_at DESC
 	`, s.organizationID(r.Context()), s.agentID(r.Context()))
 	if err != nil {
@@ -1720,11 +1727,11 @@ func (s *Server) handleInbox(w http.ResponseWriter, r *http.Request) {
 
 	items := []map[string]any{}
 	for rows.Next() {
-		var id, contactID, contactName, phone, mode, status, whatsAppSessionID, whatsAppSessionLabel, whatsappProvider, aiAgentID, aiAgentName, assignedToID, assignedToName, lastMessageText, escalationReason, priority, internalNote, openDealsJSON string
+		var id, contactID, contactName, phone, mode, status, channel, whatsAppSessionID, whatsAppSessionLabel, whatsappProvider, aiAgentID, aiAgentName, assignedToID, assignedToName, lastMessageText, escalationReason, priority, internalNote, openDealsJSON string
 		var lastMessageAt time.Time
 		var slaDueAt, lastCustomerMessageAt *time.Time
 		var unreadCount, openDealCount int
-		if err := rows.Scan(&id, &contactID, &contactName, &phone, &mode, &status, &whatsAppSessionID, &whatsAppSessionLabel, &whatsappProvider, &aiAgentID, &aiAgentName, &assignedToID, &assignedToName, &lastMessageText, &lastMessageAt, &lastCustomerMessageAt, &escalationReason, &priority, &slaDueAt, &internalNote, &unreadCount, &openDealCount, &openDealsJSON); err != nil {
+		if err := rows.Scan(&id, &contactID, &contactName, &phone, &mode, &status, &channel, &whatsAppSessionID, &whatsAppSessionLabel, &whatsappProvider, &aiAgentID, &aiAgentName, &assignedToID, &assignedToName, &lastMessageText, &lastMessageAt, &lastCustomerMessageAt, &escalationReason, &priority, &slaDueAt, &internalNote, &unreadCount, &openDealCount, &openDealsJSON); err != nil {
 			writeJSON(w, http.StatusInternalServerError, map[string]string{"error": err.Error()})
 			return
 		}
@@ -1735,6 +1742,7 @@ func (s *Server) handleInbox(w http.ResponseWriter, r *http.Request) {
 			"phone":                 phone,
 			"mode":                  mode,
 			"status":                status,
+			"channel":               channel,
 			"whatsappSessionId":     whatsAppSessionID,
 			"whatsappSession":       whatsAppSessionLabel,
 			"whatsappProvider":      whatsappProvider,
@@ -1745,7 +1753,7 @@ func (s *Server) handleInbox(w http.ResponseWriter, r *http.Request) {
 			"lastMessageText":       lastMessageText,
 			"lastMessageAt":         lastMessageAt,
 			"lastCustomerMessageAt": lastCustomerMessageAt,
-			"whatsappWindow":        newWhatsAppCustomerWindowInfo(lastCustomerMessageAt, time.Now()),
+			"whatsappWindow":        nil,
 			"escalationReason":      escalationReason,
 			"priority":              priority,
 			"slaDueAt":              slaDueAt,
@@ -1753,6 +1761,9 @@ func (s *Server) handleInbox(w http.ResponseWriter, r *http.Request) {
 			"unreadCount":           unreadCount,
 			"openDealCount":         openDealCount,
 			"openDeals":             parseJSONValue(openDealsJSON),
+		}
+		if channel == "whatsapp" {
+			item["whatsappWindow"] = newWhatsAppCustomerWindowInfo(lastCustomerMessageAt, time.Now())
 		}
 		items = append(items, item)
 	}
@@ -4539,6 +4550,7 @@ func (s *Server) handleConversationDetail(w http.ResponseWriter, r *http.Request
 		Phone                 string     `json:"phone"`
 		Mode                  string     `json:"mode"`
 		Status                string     `json:"status"`
+		Channel               string     `json:"channel"`
 		WhatsAppSessionID     string     `json:"whatsappSessionId"`
 		WhatsAppSessionName   string     `json:"whatsappSession"`
 		WhatsAppProvider      string     `json:"whatsappProvider"`
@@ -4565,9 +4577,10 @@ func (s *Server) handleConversationDetail(w http.ResponseWriter, r *http.Request
 		  ct.phone,
 		  c.mode::text,
 		  c.status::text,
-		  COALESCE(c.whatsapp_session_id::text, ''),
-		  COALESCE(ws.label, ''),
-		  COALESCE(ws.provider, 'whatsmeow'),
+		  c.channel,
+		  COALESCE(c.whatsapp_session_id::text, c.instagram_session_id::text, ''),
+		  COALESCE(ws.label, NULLIF('@' || igs.username, '@'), ''),
+		  COALESCE(ws.provider, CASE WHEN c.channel = 'instagram' THEN 'instagram' ELSE 'whatsmeow' END),
 		  COALESCE(c.ai_agent_id::text, ''),
 		  COALESCE(aa.name, ''),
 	  c.assigned_to,
@@ -4583,6 +4596,7 @@ func (s *Server) handleConversationDetail(w http.ResponseWriter, r *http.Request
 		FROM conversations c
 		JOIN contacts ct ON ct.id = c.contact_id AND ct.organization_id = c.organization_id
 		LEFT JOIN whatsapp_sessions ws ON ws.id = c.whatsapp_session_id AND ws.organization_id = c.organization_id
+		LEFT JOIN instagram_sessions igs ON igs.id = c.instagram_session_id AND igs.organization_id = c.organization_id
 		LEFT JOIN ai_agents aa ON aa.id = c.ai_agent_id AND aa.organization_id = c.organization_id
 		LEFT JOIN agents a ON a.id = c.assigned_to
 		LEFT JOIN LATERAL (
@@ -4623,6 +4637,7 @@ func (s *Server) handleConversationDetail(w http.ResponseWriter, r *http.Request
 		&detail.Phone,
 		&detail.Mode,
 		&detail.Status,
+		&detail.Channel,
 		&detail.WhatsAppSessionID,
 		&detail.WhatsAppSessionName,
 		&detail.WhatsAppProvider,
@@ -4644,7 +4659,10 @@ func (s *Server) handleConversationDetail(w http.ResponseWriter, r *http.Request
 		return
 	}
 	detail.OpenDeals = parseJSONValue(openDealsJSON)
-	whatsappWindow := newWhatsAppCustomerWindowInfo(detail.LastCustomerMessageAt, time.Now())
+	var whatsappWindow any
+	if detail.Channel == "whatsapp" {
+		whatsappWindow = newWhatsAppCustomerWindowInfo(detail.LastCustomerMessageAt, time.Now())
+	}
 
 	messages := []map[string]any{}
 	rows, err := s.db.Query(r.Context(), `
@@ -5663,14 +5681,16 @@ func (s *Server) handleManualMessage(w http.ResponseWriter, r *http.Request, id 
 	defer tx.Rollback(r.Context())
 
 	var assignedTo *string
-	var mode, phone, whatsAppSessionID, whatsappProvider string
+	var mode, channel, phone, whatsAppSessionID, instagramSessionID, whatsappProvider string
 	var lastCustomerMessageAt *time.Time
 	err = tx.QueryRow(r.Context(), `
 		SELECT
 		  c.assigned_to,
 		  c.mode::text,
+		  c.channel,
 		  ct.phone,
 		  COALESCE(c.whatsapp_session_id::text, ''),
+		  COALESCE(c.instagram_session_id::text, ''),
 		  COALESCE(ws.provider, 'whatsmeow'),
 		  inbound.last_customer_message_at
 		FROM conversations c
@@ -5685,7 +5705,7 @@ func (s *Server) handleManualMessage(w http.ResponseWriter, r *http.Request, id 
 		) inbound ON TRUE
 		WHERE c.id = $1 AND c.organization_id = $2
 		FOR UPDATE OF c
-	`, id, s.organizationID(r.Context())).Scan(&assignedTo, &mode, &phone, &whatsAppSessionID, &whatsappProvider, &lastCustomerMessageAt)
+	`, id, s.organizationID(r.Context())).Scan(&assignedTo, &mode, &channel, &phone, &whatsAppSessionID, &instagramSessionID, &whatsappProvider, &lastCustomerMessageAt)
 	if err != nil {
 		writeJSON(w, http.StatusNotFound, map[string]string{"error": "conversation not found"})
 		return
@@ -5696,7 +5716,8 @@ func (s *Server) handleManualMessage(w http.ResponseWriter, r *http.Request, id 
 		writeJSON(w, http.StatusConflict, map[string]string{"error": hint})
 		return
 	}
-	if strings.EqualFold(whatsappProvider, "meta_cloud") && !whatsappCustomerWindowAllowsFreeform(lastCustomerMessageAt, time.Now()) {
+	isInstagram := strings.EqualFold(channel, "instagram")
+	if !isInstagram && strings.EqualFold(whatsappProvider, "meta_cloud") && !whatsappCustomerWindowAllowsFreeform(lastCustomerMessageAt, time.Now()) {
 		window := newWhatsAppCustomerWindowInfo(lastCustomerMessageAt, time.Now())
 		writeJSON(w, http.StatusConflict, map[string]any{
 			"error":          "WhatsApp customer service window is closed. Use an approved Meta message template before sending free-form follow-up.",
@@ -5706,13 +5727,25 @@ func (s *Server) handleManualMessage(w http.ResponseWriter, r *http.Request, id 
 		return
 	}
 
-	requestContext := context.WithValue(r.Context(), contextWhatsAppSession, whatsAppSessionID)
-	if !s.requireWhatsAppConnected(w, r.WithContext(requestContext)) {
-		return
-	}
+	requestContext := r.Context()
 	var mediaPayload *messageMediaPayload
 	var sendResult waSendResult
-	if hasMedia {
+	if isInstagram {
+		if hasMedia {
+			writeJSON(w, http.StatusBadRequest, map[string]string{"error": "Instagram media replies are not supported yet"})
+			return
+		}
+		recipientID, ok := instagramRecipientID(phone, instagramSessionID)
+		if !ok {
+			writeJSON(w, http.StatusConflict, map[string]string{"error": "Instagram conversation is not connected correctly"})
+			return
+		}
+		sendResult, err = s.sendInstagramText(requestContext, instagramSessionID, recipientID, req.Text)
+	} else if hasMedia {
+		requestContext = context.WithValue(requestContext, contextWhatsAppSession, whatsAppSessionID)
+		if !s.requireWhatsAppConnected(w, r.WithContext(requestContext)) {
+			return
+		}
 		mediaPayload = &messageMediaPayload{
 			Base64:   req.MediaBase64,
 			MimeType: req.MediaMime,
@@ -5725,6 +5758,10 @@ func (s *Server) handleManualMessage(w http.ResponseWriter, r *http.Request, id 
 		}
 		sendResult, err = s.sendWhatsAppMedia(requestContext, phone, req.Text, *mediaPayload)
 	} else {
+		requestContext = context.WithValue(requestContext, contextWhatsAppSession, whatsAppSessionID)
+		if !s.requireWhatsAppConnected(w, r.WithContext(requestContext)) {
+			return
+		}
 		sendResult, err = s.sendWhatsAppText(requestContext, phone, req.Text)
 	}
 	if err != nil {
@@ -5738,7 +5775,8 @@ func (s *Server) handleManualMessage(w http.ResponseWriter, r *http.Request, id 
 	}
 	messageContentType := "text"
 	rawPayload := map[string]any{
-		"source": "dashboard",
+		"source":  "dashboard",
+		"channel": channel,
 	}
 	if hasMedia {
 		messageContentType = normalizeMessageMediaKind(mediaPayload.Kind, mediaPayload.MimeType)

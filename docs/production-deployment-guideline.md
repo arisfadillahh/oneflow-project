@@ -37,6 +37,19 @@ Every deployment must record:
 
 Do not call a release synchronized only because the page returns HTTP 200. Compiled assets, feature behavior and responsive UI must be checked.
 
+## Release record: Instagram Inbox and permission validation 2026-09-09
+
+- Repository: `https://github.com/arisfadillahh/oneflow-project`; deployment used the intentional Instagram working tree from the monorepo source of truth.
+- Scope: official Instagram Login, encrypted session storage, signed webhooks, shared multi-channel Inbox, Instagram-only Inbox readiness, and an admin connection check for `instagram_business_basic` plus `instagram_business_manage_messages`.
+- Local checks: frontend tests passed 44/44; frontend production build passed with 25 routes.
+- Ubuntu checks: Go formatting and `go test ./apps/app-backend/internal/httpapi` passed; backend and frontend Docker builds passed.
+- Backend image: `oneflow-app-backend:instagram-permission-validation-20260908`, image ID `sha256:6ec4f3d309784a1cffe3e51c7378bb53f3b065409cbaff63f54e76ae8f2c06d6`.
+- Frontend image: `oneflow-dashboard-web:instagram-inbox-v5-20260909`, image ID `sha256:91fd99e1019664085eb587d32a41268b2c4f014525fcaa1435d20484563b2396`.
+- Compose backups: `/home/goffath/oneflow-deploy/docker-compose.before-instagram-permission-validation-20260909.yml` and `/home/goffath/oneflow-deploy/docker-compose.before-instagram-inbox-v5-20260909.yml`.
+- Production checks: containers healthy; `/dashboard/inbox`, `/channels`, and `/health` returned HTTP 200; account `qwe` listed connected `@itsoneflow`; server-side profile and messaging validation returned HTTP 200.
+- Meta status: both Instagram permissions remain at standard access while the existing WhatsApp submission is in review. Meta's API-call counter still shows zero immediately after successful calls and may update asynchronously; real non-role Instagram DMs remain unavailable while the app is in Development mode.
+- Known risk: `npm ci` reports four high-severity dependency advisories. They were not auto-fixed during this release because dependency changes require a separate compatibility review.
+
 ## Release record: Inbox read state and bilingual shell 2026-09-08
 
 - Repository: `https://github.com/arisfadillahh/oneflow-project`.

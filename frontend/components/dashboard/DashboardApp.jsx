@@ -648,6 +648,7 @@ export default function DashboardApp() {
   const [teamMembers, setTeamMembers] = useState([]);
   const [teamInvites, setTeamInvites] = useState([]);
   const [waSessions, setWaSessions] = useState([]);
+  const [instagramSessions, setInstagramSessions] = useState([]);
   const [activeWaSessionId, setActiveWaSessionId] = useState("");
   const [pendingWaSessionId, setPendingWaSessionId] = useState("");
   const [metaTemplates, setMetaTemplates] = useState([]);
@@ -792,12 +793,14 @@ export default function DashboardApp() {
   const planMaxWhatsAppSessions = Number(billingPlan?.maxWhatsAppSessions ?? billingPlan?.max_whatsapp_sessions ?? 0);
   const planAllowsWhatsApp = planMaxWhatsAppSessions > 0;
   const hasConnectedWhatsAppSession = visibleWaSessions.some(setupSessionConnected);
-  const canOpenChatOps = planAllowsWhatsApp && hasConnectedWhatsAppSession;
+  const hasConnectedInstagramSession = instagramSessions.length > 0;
+  const canOpenWhatsAppOps = planAllowsWhatsApp && hasConnectedWhatsAppSession;
+  const canOpenChatOps = canOpenWhatsAppOps || hasConnectedInstagramSession;
   const displayWaStatus = useMemo(() => (
-    canOpenChatOps
+    canOpenWhatsAppOps
       ? { status: "connected", details: visibleWaSessions.find(setupSessionConnected)?.details ?? {} }
       : { status: "disconnected", details: {} }
-  ), [canOpenChatOps, visibleWaSessions]);
+  ), [canOpenWhatsAppOps, visibleWaSessions]);
   const enabledBusinessToolKeys = useMemo(
     () => new Set(businessTools.filter((item) => item.installed ?? item.enabled).map((item) => item.key)),
     [businessTools]
@@ -874,6 +877,7 @@ export default function DashboardApp() {
   function resetWhatsAppViewState() {
     setWaStatus({ status: "disconnected", details: {} });
     setWaSessions([]);
+    setInstagramSessions([]);
     setActiveWaSessionId("");
     setPendingWaSessionId("");
     setMetaTemplates([]);
@@ -1909,6 +1913,7 @@ export default function DashboardApp() {
       { key: "teamMembers", label: "team members", run: () => requestJSON(`${apiBase}/api/team/members`, {}, { token: currentAuth.token }) },
     { key: "teamInvites", label: "undangan tim", run: () => requestJSON(`${apiBase}/api/team/invites`, {}, { token: currentAuth.token }) },
     { key: "waSessions", label: "koneksi WhatsApp", run: () => requestJSON(`${apiBase}/api/whatsapp/sessions`, {}, { token: currentAuth.token }) },
+      { key: "instagramSessions", label: "koneksi Instagram", run: () => requestJSON(`${apiBase}/api/instagram/sessions`, {}, { token: currentAuth.token }) },
       { key: "metaCloudConfig", label: "konfigurasi WhatsApp resmi", run: () => requestJSON(`${apiBase}/api/whatsapp/meta/config`, {}, { token: currentAuth.token }) },
       { key: "aiAgents", label: "AI agent", run: () => requestJSON(`${apiBase}/api/ai-agents`, {}, { token: currentAuth.token }) },
       loadedBusinessToolKeys.has("commerce") ? { key: "commerceProducts", label: "produk dan stok", run: () => requestJSON(`${apiBase}/api/commerce/products?status=all`, {}, { token: currentAuth.token }) } : null,
@@ -1984,6 +1989,7 @@ export default function DashboardApp() {
           details: selected?.details ?? {},
         });
       }
+      if (key === "instagramSessions") setInstagramSessions(payload.items ?? []);
       if (key === "metaCloudConfig") {
         setMetaCloudConfig(payload ?? { enabled: false });
       }
@@ -2336,6 +2342,48 @@ export default function DashboardApp() {
   function openContactFromConversation(conversation) {
     if (conversation?.contactId) setFocusContactId(conversation.contactId);
     navigateToView("contacts");
+  }
+
+  async function connectInstagram(aiAgentId) {
+    try {
+      setError("");
+      setBusyKey("instagram-connect");
+      const payload = await requestJSON(`${apiBase}/api/instagram/oauth/start`, {
+        method: "POST",
+        body: JSON.stringify({ aiAgentId }),
+      });
+      if (!payload.authorizationUrl) throw new Error("Tautan login Instagram tidak tersedia.");
+      window.location.assign(payload.authorizationUrl);
+    } catch (connectError) {
+      setError(connectError.message);
+      setBusyKey("");
+    }
+  }
+
+  async function disconnectInstagram(sessionId) {
+    try {
+      setError("");
+      setBusyKey(`instagram-disconnect-${sessionId}`);
+      await requestJSON(`${apiBase}/api/instagram/sessions/${encodeURIComponent(sessionId)}`, { method: "DELETE" });
+      await loadDashboardData(auth, { preserveDrafts: true });
+    } catch (disconnectError) {
+      setError(disconnectError.message);
+    } finally {
+      setBusyKey("");
+    }
+  }
+
+  async function validateInstagram(sessionId) {
+    try {
+      setError("");
+      setBusyKey(`instagram-validate-${sessionId}`);
+      await requestJSON(`${apiBase}/api/instagram/sessions/${encodeURIComponent(sessionId)}/validate`, { method: "POST" });
+      showToast({ title: "Koneksi Instagram aktif", message: "Profil, izin pesan, dan akses API berhasil diperiksa." });
+    } catch (validationError) {
+      setError(validationError.message);
+    } finally {
+      setBusyKey("");
+    }
   }
 
   async function ensureWhatsAppSession() {
@@ -4177,6 +4225,7 @@ export default function DashboardApp() {
         <WhatsAppConnectionView
           waStatus={waStatus}
           sessions={waSessions}
+          instagramSessions={instagramSessions}
           aiAgents={aiAgents}
           businessTools={businessTools}
           navigateToAgents={() => navigateToView("agents")}
@@ -4187,6 +4236,10 @@ export default function DashboardApp() {
           createSession={createWhatsAppSession}
           officialWhatsAppEnabled={metaCloudConfig.enabled === true}
           connectOfficialWhatsApp={reconnectOfficialWhatsApp}
+          connectInstagram={connectInstagram}
+          validateInstagram={validateInstagram}
+          disconnectInstagram={disconnectInstagram}
+          canManageInstagram={role === "super_admin" || role === "admin"}
           canManageOfficialTemplates={role === "owner" || role === "super_admin" || role === "admin"}
           metaTemplates={metaTemplates}
           metaTemplateForm={metaTemplateForm}

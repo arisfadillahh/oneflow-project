@@ -168,6 +168,20 @@ export function InboxView({
     pending: inbox.filter((item) => item.status === "pending_human").length,
     resolved: inbox.filter((item) => item.status === "resolved").length,
   };
+  const channelSessions = useMemo(() => {
+    const sessions = new Map(
+      waSessions.map((session) => [session.id, { id: session.id, label: session.label, channel: "whatsapp" }]),
+    );
+    inbox.forEach((item) => {
+      if (!item.whatsappSessionId || sessions.has(item.whatsappSessionId)) return;
+      sessions.set(item.whatsappSessionId, {
+        id: item.whatsappSessionId,
+        label: item.whatsappSession || item.channel || t(locale, "inbox.channelFallback"),
+        channel: item.channel || "whatsapp",
+      });
+    });
+    return Array.from(sessions.values());
+  }, [inbox, locale, waSessions]);
   const canReturnToAI = isHumanMode && (!isOperator || conversation?.assignedToId === auth?.user?.id);
 
   function submitWorkflow() {
@@ -345,10 +359,10 @@ export function InboxView({
             <input value={inboxSearch} onChange={(event) => setInboxSearch(event.target.value)} placeholder={t(locale, "inbox.search")} />
           </div>
           <div className="inbox-filter-grid">
-            <select value={activeWaSessionId} onChange={(event) => setActiveWaSessionId?.(event.target.value)} title="Filter WhatsApp">
+            <select value={activeWaSessionId} onChange={(event) => setActiveWaSessionId?.(event.target.value)} title={t(locale, "inbox.filterChannel")}>
               <option value="">{t(locale, "inbox.allWhatsApp")}</option>
-              {waSessions.map((session) => (
-                <option key={session.id} value={session.id}>{session.label}</option>
+              {channelSessions.map((session) => (
+                <option key={session.id} value={session.id}>{session.channel === "instagram" ? "Instagram - " : "WhatsApp - "}{session.label}</option>
               ))}
             </select>
             <select value={activeAIAgentId} onChange={(event) => setActiveAIAgentId?.(event.target.value)} title="Filter AI Agent">
@@ -401,6 +415,7 @@ export function InboxView({
                     {truncateText(item.lastMessageText || t(locale, "inbox.noMessages"), 40)}
                   </div>
                   <div className="conversation-tags inbox-meta">
+                    <span className="badge gray inbox-mini-badge">{item.channel === "instagram" ? "Instagram" : "WhatsApp"}</span>
                     {modeBadge(item.mode)}
                     {statusBadge(item.status)}
                     {item.whatsappSession ? <span className="badge gray inbox-mini-badge">{item.whatsappSession}</span> : null}
@@ -435,7 +450,8 @@ export function InboxView({
                 <div style={{ minWidth: 0 }}>
                   <div style={{ fontSize: "14px", fontWeight: "700", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{conversation.contactName || conversation.phone}</div>
                   <div className="chat-subline">
-                    {conversation.phone} {modeBadge(conversation.mode)}
+                    {conversation.channel === "whatsapp" ? conversation.phone : null} {modeBadge(conversation.mode)}
+                    <span className="badge gray inbox-mini-badge">{conversation.channel === "instagram" ? "Instagram" : "WhatsApp"}</span>
                     {conversation.whatsappSession ? <span className="badge gray inbox-mini-badge">{conversation.whatsappSession}</span> : null}
                     {conversation.aiAgentName ? <span className="badge blue inbox-mini-badge">{conversation.aiAgentName}</span> : null}
                   </div>
@@ -662,7 +678,8 @@ export function InboxView({
             <section className="detail-section-v2">
               <div className="detail-label-v2">{t(locale, "inbox.chatStatus")}</div>
               <div className="detail-field"><span className="detail-key">{t(locale, "inbox.mode")}</span><span>{modeBadge(conversation.mode)}</span></div>
-              <div className="detail-field"><span className="detail-key">WhatsApp</span><span className="detail-val">{conversation.whatsappSession || "-"}</span></div>
+              <div className="detail-field"><span className="detail-key">{t(locale, "inbox.channel")}</span><span className="detail-val">{conversation.channel === "instagram" ? "Instagram" : "WhatsApp"}</span></div>
+              <div className="detail-field"><span className="detail-key">{t(locale, "inbox.account")}</span><span className="detail-val">{conversation.whatsappSession || "-"}</span></div>
               <div className="detail-field"><span className="detail-key">{t(locale, "inbox.agent")}</span><span className="detail-val">{conversation.aiAgentName || "-"}</span></div>
               <div className="detail-field"><span className="detail-key">{t(locale, "inbox.assigned")}</span><span className="detail-val">{conversation.assignedToName || t(locale, "inbox.aiAssistant")}</span></div>
               <div className="detail-field"><span className="detail-key">{t(locale, "inbox.priority")}</span><span className={`badge ${conversation.priority === "urgent" ? "red" : conversation.priority === "high" ? "orange" : "blue"}`}>{t(locale, `inbox.${conversation.priority || "normal"}`)}</span></div>

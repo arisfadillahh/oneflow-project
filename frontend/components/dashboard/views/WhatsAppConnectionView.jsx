@@ -1,8 +1,10 @@
+import { useState } from "react";
 import { formatDateTime, toLabel } from "../../../lib/dashboard-core";
 
 export function WhatsAppConnectionView({
   waStatus,
   sessions = [],
+  instagramSessions = [],
   aiAgents = [],
   businessTools = [],
   navigateToAgents,
@@ -13,6 +15,10 @@ export function WhatsAppConnectionView({
   createSession,
   officialWhatsAppEnabled,
   connectOfficialWhatsApp,
+  connectInstagram,
+  validateInstagram,
+  disconnectInstagram,
+  canManageInstagram = false,
   canManageOfficialTemplates,
   metaTemplates = [],
   metaTemplateForm,
@@ -45,6 +51,7 @@ export function WhatsAppConnectionView({
   navigateToTemplates,
   templateToolsOnSeparatePage = false
 }) {
+  const [instagramAgentId, setInstagramAgentId] = useState("");
   const hasSessions = sessions.length > 0;
   const hasAIAgents = aiAgents.some((agent) => agent.isActive !== false);
   const isWaBusy = String(busyKey || "").startsWith("wa-");
@@ -57,6 +64,9 @@ export function WhatsAppConnectionView({
   const isWhatsAppIncluded = maxWhatsAppSessions > 0;
   const isWhatsAppAtLimit = isWhatsAppIncluded && sessions.length >= maxWhatsAppSessions;
   const canCreateWhatsApp = officialWhatsAppEnabled && isWhatsAppIncluded && !isWhatsAppAtLimit && hasAIAgents;
+  const activeInstagramAgents = aiAgents.filter((agent) => agent.isActive !== false);
+  const selectedInstagramAgentId = instagramAgentId || activeInstagramAgents[0]?.id || "";
+  const isInstagramBusy = String(busyKey || "").startsWith("instagram-");
   const handleRefreshStatus = () => refreshAll?.();
   const openQrForSession = (sessionId) => {
     if (sessionId && officialWhatsAppEnabled) connectOfficialWhatsApp?.(sessionId);
@@ -110,13 +120,13 @@ export function WhatsAppConnectionView({
             </div>
             <span className="badge green">Tersedia</span>
           </div>
-          <div className="channel-center-item">
+          <div className={`channel-center-item ${instagramSessions.length ? "is-active" : ""}`}>
             <div className="channel-center-icon channel-icon-ig">IG</div>
             <div className="channel-center-copy">
               <strong>Instagram</strong>
               <span>Balas DM dari Inbox Oneflow.</span>
             </div>
-            <span className="badge gray">Segera hadir</span>
+            <span className={`badge ${instagramSessions.length ? "green" : "blue"}`}>{instagramSessions.length ? "Terhubung" : "Tersedia"}</span>
           </div>
           <div className="channel-center-item">
             <div className="channel-center-icon channel-icon-tt">TT</div>
@@ -128,6 +138,46 @@ export function WhatsAppConnectionView({
           </div>
         </div>
         <p className="text-sm text-muted channel-center-note">Untuk channel baru, Oneflow akan memandu login akun bisnis, izin akses, dan tes koneksi tanpa istilah teknis.</p>
+      </div>
+
+      <div className="card" style={{ marginBottom: "24px" }}>
+        <div className="card-header">
+          <div>
+            <div className="card-title">Koneksi Instagram</div>
+            <div className="card-subtitle">Hubungkan akun profesional Instagram agar DM masuk ke Inbox dan dapat dibalas oleh tim.</div>
+          </div>
+        </div>
+        {canManageInstagram ? (
+          <div className="inline-form wa-device-form">
+            <select className="form-select" value={selectedInstagramAgentId} onChange={(event) => setInstagramAgentId(event.target.value)} disabled={!hasAIAgents || isInstagramBusy} aria-label="AI agent untuk Instagram">
+              <option value="">Pilih AI Agent</option>
+              {activeInstagramAgents.map((agent) => <option key={agent.id} value={agent.id}>{agent.name}</option>)}
+            </select>
+            <button className="btn btn-primary" type="button" onClick={() => connectInstagram?.(selectedInstagramAgentId)} disabled={!selectedInstagramAgentId || isInstagramBusy}>
+              {busyKey === "instagram-connect" ? "Membuka Instagram..." : "Hubungkan Instagram"}
+            </button>
+          </div>
+        ) : <p className="text-sm text-muted">Minta admin organisasi untuk menghubungkan akun Instagram.</p>}
+        <div className="table-wrap">
+          <table>
+            <thead><tr><th>Akun</th><th>AI Agent</th><th>Webhook</th><th>Terhubung</th><th>Aksi</th></tr></thead>
+            <tbody>
+              {instagramSessions.map((session) => {
+                const agent = aiAgents.find((item) => item.id === session.aiAgentId);
+                return (
+                  <tr key={session.id}>
+                    <td><strong>@{session.username || session.instagramUserId}</strong></td>
+                    <td>{agent?.name || "-"}</td>
+                    <td><span className={`badge ${session.webhookConnected ? "green" : "orange"}`}>{session.webhookConnected ? "Aktif" : "Menunggu event"}</span></td>
+                    <td className="text-muted text-sm">{formatDateTime(session.connectedAt)}</td>
+                    <td>{canManageInstagram ? <div className="row-actions"><button className="btn btn-secondary btn-sm" type="button" onClick={() => validateInstagram?.(session.id)} disabled={isInstagramBusy}>Cek koneksi</button><button className="btn btn-danger btn-sm" type="button" onClick={() => disconnectInstagram?.(session.id)} disabled={isInstagramBusy}>Putuskan</button></div> : "-"}</td>
+                  </tr>
+                );
+              })}
+              {!instagramSessions.length ? <tr><td colSpan={5} style={{ textAlign: "center", padding: "24px", color: "var(--gray-500)" }}>Belum ada akun Instagram terhubung.</td></tr> : null}
+            </tbody>
+          </table>
+        </div>
       </div>
 
       {!hasAIAgents ? (
