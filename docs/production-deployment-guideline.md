@@ -4,8 +4,9 @@ Use this file for every dashboard deployment.
 
 ## Source of truth
 
-- Repository: `https://github.com/arisfadillahh/oneflow-frontend`
-- Local path: `C:/Users/Aris Fadillah/Documents/Projects/Oneflow/oneflow-frontend`
+- Repository: `https://github.com/arisfadillahh/oneflow-project`
+- Local path: `C:/Users/Aris Fadillah/Documents/Projects/Oneflow/oneflow-platform`
+- Dashboard build context: `frontend/`; backend build context: `backend/`.
 - The frontend copy under `../archive/urus.in/apps/dashboard-web` is legacy and must not be used for dashboard deployment.
 - Preserve the working tree. Review `git status --short` and include intentional uncommitted changes in the release manifest before building.
 
@@ -18,7 +19,7 @@ Use this file for every dashboard deployment.
 5. Use a new immutable image tag containing the date and release purpose. Never overwrite an existing rollback tag.
 6. Back up the active compose file before changing its dashboard image.
 7. Recreate only the dashboard container. Keep backend, AI, worker, gateway and data volumes unchanged.
-8. Verify container health, build ID, public `/dashboard/inbox`, `/agents/setup`, `/whatsapp`, and `/api/health` after deployment.
+8. Verify container health, build ID, public `/dashboard/inbox`, `/agents/setup`, `/whatsapp`, and `/health` after deployment.
 9. Test desktop and mobile layout, dark mode, chat-first onboarding, official WhatsApp coexistence entry point, and Meta template controls before calling the release ready.
 10. Record the deployed image ID and rollback compose path in the release notes.
 
@@ -35,6 +36,20 @@ Every deployment must record:
 - remaining known differences from the previous production image.
 
 Do not call a release synchronized only because the page returns HTTP 200. Compiled assets, feature behavior and responsive UI must be checked.
+
+## Release record: Inbox read state and bilingual shell 2026-09-08
+
+- Repository: `https://github.com/arisfadillahh/oneflow-project`.
+- Scope: per-agent Inbox read receipts, unread filter and badge, Indonesian/English account preference, compact WhatsApp 24-hour status, and dark-mode Inbox contrast.
+- Local checks: frontend tests passed 41/41; frontend production build passed with 25 routes.
+- Ubuntu checks: Go formatting and `go test ./...` passed in `golang:1.24`; both production Docker builds passed.
+- Backend image: `oneflow-app-backend:inbox-i18n-20260908`, image ID `sha256:3d2cd66bae2f3a962e05a541c9bea4cec2b0484538a5bc8541c215bb17c5a6eb`.
+- Frontend image: `oneflow-dashboard-web:inbox-i18n-v2-20260908`, image ID `sha256:9e1cfe28411cc2ee78db0774061be06175bbe35c395c62a27a4aa272d29b1d20`.
+- Compose backups: `/home/goffath/oneflow-deploy/docker-compose.before-20260908-inbox-i18n.yml` and `/home/goffath/oneflow-deploy/docker-compose.before-inbox-i18n-v2-20260908.yml`.
+- Database backup: `/home/goffath/oneflow-deploy/oneflow-before-20260908-inbox-i18n.dump`.
+- Migration verification: `agents.preferred_locale` and `conversation_reads` exist.
+- Browser QA: opening a chat cleared its per-agent unread badge; English persisted after reload; the test account was restored to Indonesian; narrow-screen dark Inbox and the compact WhatsApp window status rendered without overlap.
+- Public route checks: `/`, `/dashboard/inbox`, `/dashboard/account`, `/channels`, `/whatsapp/templates`, and `/health` returned HTTP 200; unauthenticated `/api/me` correctly returned HTTP 401.
 
 ## Release record: 2026-09-07
 

@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { EmptyState } from "../ui";
+import { t } from "../../../lib/i18n";
 import {
   apiBase,
   wsBase,
@@ -87,6 +88,7 @@ export function InboxView({
   aiTyping,
   busyKey,
   onNotify,
+  locale = "id",
 }) {
   const conversation = selectedConversation?.conversation;
   const messages = selectedConversation?.messages ?? [];
@@ -131,7 +133,7 @@ export function InboxView({
   const [emojiPickerOpen, setEmojiPickerOpen] = useState(false);
   const [mobilePane, setMobilePane] = useState("list");
 
-  const conversationName = conversation?.contactName || conversation?.phone || "Contact";
+  const conversationName = conversation?.contactName || conversation?.phone || t(locale, "inbox.contactFallback");
   const conversationInitials = avatarInitials(conversationName);
   const conversationAvatarColor = avatarColorClass(conversationName);
 
@@ -160,6 +162,7 @@ export function InboxView({
 
   const counts = {
     all: inbox.length,
+    unread: inbox.reduce((total, item) => total + Number(item.unreadCount || 0), 0),
     ai: inbox.filter((item) => item.mode === "ai").length,
     human: inbox.filter((item) => item.mode === "human").length,
     pending: inbox.filter((item) => item.status === "pending_human").length,
@@ -182,19 +185,19 @@ export function InboxView({
     const rows = messages.slice(-7).map((message) => {
       const sender = message.senderType || "";
       const direction = message.direction || "";
-      let label = "Chat updated";
+      let label = t(locale, "inbox.chatUpdated");
       let tone = "gray";
       if (["customer", legacyInboundSenderType].includes(sender) || direction === "inbound") {
-        label = "Pesan masuk dari kontak";
+        label = t(locale, "inbox.incoming");
         tone = "gray";
       } else if (sender === "ai") {
-        label = "AI menjawab kontak";
+        label = t(locale, "inbox.aiAnswered");
         tone = "green";
       } else if (sender === "agent") {
-        label = "Pesan dikirim agent";
+        label = t(locale, "inbox.agentSent");
         tone = "blue";
       } else if (sender === "system") {
-        label = "System update";
+        label = t(locale, "inbox.systemUpdate");
         tone = "orange";
       }
       return {
@@ -207,20 +210,20 @@ export function InboxView({
     if (conversation?.createdAt) {
       rows.unshift({
         id: `conversation-created-${conversation.id}`,
-        label: "Percakapan dibuka",
+        label: t(locale, "inbox.opened"),
         tone: "gray",
         at: conversation.createdAt,
       });
     }
     return rows.sort((a, b) => new Date(b.at).getTime() - new Date(a.at).getTime()).slice(0, 8);
-  }, [conversation?.createdAt, conversation?.id, messages]);
+  }, [conversation?.createdAt, conversation?.id, locale, messages]);
 
   async function handleManualMediaChange(event) {
     const file = event.target.files?.[0];
     event.target.value = "";
     if (!file) return;
     if (file.size > 8 * 1024 * 1024) {
-      onNotify?.({ tone: "warn", title: "File terlalu besar", message: "Ukuran media maksimal 8 MB." });
+      onNotify?.({ tone: "warn", title: t(locale, "inbox.fileTooLarge"), message: t(locale, "inbox.fileLimit") });
       return;
     }
     const base64 = await fileToBase64(file);
@@ -279,7 +282,7 @@ export function InboxView({
   function statusBadge(status) {
     const normalized = String(status || "open");
     const tone = normalized === "pending_human" ? "orange" : normalized === "resolved" ? "gray" : "green";
-    const label = normalized === "pending_human" ? "Pending" : normalized === "resolved" ? "Resolved" : "Active";
+    const label = normalized === "pending_human" ? t(locale, "inbox.pending") : normalized === "resolved" ? t(locale, "inbox.resolved") : t(locale, "inbox.active");
     return <span className={`badge ${tone} inbox-mini-badge`}>{label}</span>;
   }
 
@@ -308,7 +311,7 @@ export function InboxView({
   }
 
   function senderLabel(type) {
-    if (type === "ai") return "AI Assistant";
+    if (type === "ai") return t(locale, "inbox.aiAssistant");
     if (type === "agent") return conversation?.assignedToName ? `${conversation.assignedToName} (Tim Support)` : "Tim Support";
     return "";
   }
@@ -325,11 +328,11 @@ export function InboxView({
     {!canOpenChatOps && (
       <div className="notice warn inbox-connection-warning">
         <div>
-          <strong>Belum ada channel yang terkoneksi</strong>
-          <p>Inbox tetap bisa dibuka untuk review dan Return to AI. Kirim pesan manual butuh WhatsApp connected.</p>
+          <strong>{t(locale, "inbox.channelMissing")}</strong>
+          <p>{t(locale, "inbox.channelMissingBody")}</p>
         </div>
         <button className="btn btn-primary btn-sm" type="button" onClick={navigateToWhatsApp}>
-          Buka WhatsApp
+          {t(locale, "inbox.openChannels")}
         </button>
       </div>
     )}
@@ -339,17 +342,17 @@ export function InboxView({
         <div className="inbox-list-header">
           <div className="inbox-search">
             <span className="icon-inline">{Icons.search}</span>
-            <input value={inboxSearch} onChange={(event) => setInboxSearch(event.target.value)} placeholder="Cari kontak..." />
+            <input value={inboxSearch} onChange={(event) => setInboxSearch(event.target.value)} placeholder={t(locale, "inbox.search")} />
           </div>
           <div className="inbox-filter-grid">
             <select value={activeWaSessionId} onChange={(event) => setActiveWaSessionId?.(event.target.value)} title="Filter WhatsApp">
-              <option value="">Semua WhatsApp</option>
+              <option value="">{t(locale, "inbox.allWhatsApp")}</option>
               {waSessions.map((session) => (
                 <option key={session.id} value={session.id}>{session.label}</option>
               ))}
             </select>
             <select value={activeAIAgentId} onChange={(event) => setActiveAIAgentId?.(event.target.value)} title="Filter AI Agent">
-              <option value="">Semua Agent</option>
+              <option value="">{t(locale, "inbox.allAgents")}</option>
               {aiAgents.map((agent) => (
                 <option key={agent.id} value={agent.id}>{agent.name}</option>
               ))}
@@ -357,17 +360,18 @@ export function InboxView({
           </div>
           <div className="inbox-tabs">
             {[
-              { id: "all", label: "All" },
-              { id: "ai", label: "AI" },
-              { id: "human", label: "Human" },
-              { id: "pending", label: "Pending" },
+              { id: "all", label: t(locale, "inbox.all") },
+              { id: "unread", label: t(locale, "inbox.unread"), count: counts.unread },
+              { id: "ai", label: t(locale, "inbox.ai") },
+              { id: "human", label: t(locale, "inbox.human") },
+              { id: "pending", label: t(locale, "inbox.pending") },
             ].map((tab) => (
               <button
                 key={tab.id}
                 className={`inbox-tab ${inboxTab === tab.id ? "active" : ""}`}
                 onClick={() => setInboxTab(tab.id)}
               >
-                {tab.label}
+                {tab.label}{tab.count > 0 ? <span className="inbox-tab-count">{tab.count}</span> : null}
               </button>
             ))}
           </div>
@@ -376,19 +380,25 @@ export function InboxView({
         <div className="inbox-items">
           {displayInbox.length ? displayInbox.map((item) => {
             const isActive = conversation?.id === item.id;
-            const itemName = item.contactName || item.phone || "Unknown";
+            const itemName = item.contactName || item.phone || t(locale, "inbox.unknown");
             return (
-              <button key={item.id} className={`inbox-item ${isActive ? "active" : ""}`} onClick={() => openConversation(item.id)}>
+              <button
+                key={item.id}
+                className={`inbox-item ${isActive ? "active" : ""} ${Number(item.unreadCount || 0) > 0 ? "is-unread" : ""}`}
+                onClick={() => openConversation(item.id)}
+                aria-label={Number(item.unreadCount || 0) > 0 ? `${itemName}, ${t(locale, "inbox.readCount", { count: item.unreadCount })}` : itemName}
+              >
                 <div className={`avatar avatar-sm ${avatarColorClass(itemName)}`}>
                   {avatarInitials(itemName)}
                 </div>
                 <div className="conversation-main">
                   <div className="conversation-topline inbox-item-header">
                     <strong className="inbox-name">{itemName}</strong>
+                    {Number(item.unreadCount || 0) > 0 ? <span className="inbox-unread-dot" aria-hidden="true" /> : null}
                     <span className="conversation-time inbox-time">{formatTime(item.lastMessageAt)}</span>
                   </div>
                   <div className="conversation-preview inbox-preview">
-                    {truncateText(item.lastMessageText || "No messages yet.", 40)}
+                    {truncateText(item.lastMessageText || t(locale, "inbox.noMessages"), 40)}
                   </div>
                   <div className="conversation-tags inbox-meta">
                     {modeBadge(item.mode)}
@@ -400,7 +410,7 @@ export function InboxView({
               </button>
             );
           }) : (
-            <EmptyState title="Belum ada percakapan" copy="Coba ubah filter atau pencarian." />
+            <EmptyState title={t(locale, "inbox.noConversation")} copy={t(locale, "inbox.changeFilter")} />
           )}
         </div>
       </section>
@@ -412,10 +422,10 @@ export function InboxView({
             <div className="chat-header">
               <div className="mobile-chat-nav">
                 <button className="mobile-pane-btn" type="button" onClick={() => setMobilePane("list")}>
-                  Daftar chat
+                  {t(locale, "inbox.backList")}
                 </button>
                 <button className="mobile-pane-btn" type="button" onClick={() => setMobilePane("details")}>
-                  Detail
+                  {t(locale, "inbox.details")}
                 </button>
               </div>
               <div style={{ display: "flex", alignItems: "center", gap: "12px", minWidth: 0 }}>
@@ -434,19 +444,19 @@ export function InboxView({
             </div>
 
             {!isOwner && (
-              <div className="chat-actions" aria-label="Aksi percakapan">
+              <div className="chat-actions" aria-label={t(locale, "inbox.actions")}>
                 {canReturnToAI && (
                   <button className="btn btn-secondary btn-sm" disabled={busyKey === "conversation-return-to-ai"} onClick={() => runConversationAction(conversation.id, "return-to-ai", {})}>
-                    Return to AI
+                    {t(locale, "inbox.returnAI")}
                   </button>
                 )}
                 {(!isHumanMode || (canForceTakeover && conversation?.assignedToId !== auth?.user?.id)) && (
                   <button className="btn btn-warning btn-sm" disabled={busyKey === "conversation-takeover"} onClick={() => runConversationAction(conversation.id, "takeover", { note: takeoverNote || "" })}>
-                    Take Over
+                    {t(locale, "inbox.takeover")}
                   </button>
                 )}
                 <button className="btn btn-success btn-sm" disabled={busyKey === "conversation-resolve"} onClick={() => runConversationAction(conversation.id, "resolve", {})}>
-                  Resolve
+                  {t(locale, "inbox.resolve")}
                 </button>
               </div>
             )}
@@ -460,7 +470,7 @@ export function InboxView({
                 if (type === "system") {
                   return (
                     <div key={index} className="system-event">
-                      {message.text || "System update"}
+                      {message.text || t(locale, "inbox.systemUpdate")}
                     </div>
                   );
                 }
@@ -484,38 +494,45 @@ export function InboxView({
               {isAIThinking && (
                 <div className="message-row agent" style={{ display: "flex", justifyContent: "flex-end" }}>
                   <div className="message-bubble ai typing-bubble">
-                    <div className="typing-dots" aria-label="AI sedang mengetik">
+                    <div className="typing-dots" aria-label={t(locale, "inbox.aiTyping")}>
                       <span />
                       <span />
                       <span />
                     </div>
-                    <div style={{ fontSize: "10px", marginTop: "4px", opacity: 0.7, textAlign: "right" }}>AI thinking</div>
+                    <div style={{ fontSize: "10px", marginTop: "4px", opacity: 0.7, textAlign: "right" }}>{t(locale, "inbox.aiTyping")}</div>
                   </div>
                 </div>
               )}
             </div>
 
             <div className="chat-composer">
-              <div style={{ background: "#f3f4f6", borderRadius: "12px", padding: "8px" }}>
+              <div className="chat-composer-surface">
                 {!canSendManualMessage && (
-                  <div style={{ padding: "8px 10px", marginBottom: "6px", borderRadius: "8px", background: "#fff7ed", color: "#9a3412", fontSize: "12px", fontWeight: 700 }}>
-                    {composer.hint || "Take over conversation before replying manually."}
+                  <div className="composer-access-notice" role="status">
+                    {composer.hint || t(locale, "inbox.takeoverHint")}
                   </div>
                 )}
                 {whatsappWindow ? (
-                  <div className={`tickets-window-panel ${whatsappWindow.requiresTemplate ? "warn" : "ok"}`} style={{ margin: "0 0 8px 0" }}>
-                    <strong>Aturan follow-up WhatsApp</strong>
-                    <span>
+                  <div
+                    className={`whatsapp-window-status ${whatsappWindow.requiresTemplate ? "warn" : "ok"}`}
+                    role="status"
+                    title={whatsappWindow.status === "open" ? t(locale, "inbox.windowOpenDetail") : t(locale, "inbox.windowClosedDetail")}
+                  >
+                    <span className="whatsapp-window-dot" aria-hidden="true" />
+                    <strong>
                       {whatsappWindow.status === "open"
-                        ? `Masih di bawah 24 jam. Free-form boleh dikirim; sisa sekitar ${whatsappWindow.hoursRemaining || 0} jam.`
-                        : "Di atas 24 jam atau belum ada inbound tercatat. WhatsApp official wajib approved template; biaya Meta/BSP terpisah dari credit AI."}
+                        ? t(locale, "inbox.windowOpen", { hours: whatsappWindow.hoursRemaining || 0 })
+                        : t(locale, "inbox.windowClosed")}
+                    </strong>
+                    <span className="whatsapp-window-detail">
+                      {whatsappWindow.status === "open" ? t(locale, "inbox.windowOpenDetail") : t(locale, "inbox.windowClosedDetail")}
                     </span>
                   </div>
                 ) : null}
                 <textarea
                   ref={manualTextareaRef}
                   style={{ width: "100%", background: "transparent", border: "none", outline: "none", padding: "8px", fontSize: "14px", minHeight: "80px", resize: "none", opacity: canSendManualMessage ? 1 : 0.55 }}
-                  placeholder={canSendManualMessage ? "Type a message..." : "Take over first to reply..."}
+                  placeholder={canSendManualMessage ? t(locale, "inbox.typeMessage") : t(locale, "inbox.takeoverFirst")}
                   value={manualMessage}
                   onChange={(e) => setManualMessage(e.target.value)}
                   onKeyDown={handleManualMessageKeyDown}
@@ -523,15 +540,15 @@ export function InboxView({
                 />
                 {manualMedia ? (
                   <div className="manual-media-chip">
-                    <span>{manualMedia.kind === "image" ? "Image" : "File"}: {manualMedia.fileName}</span>
-                    <button type="button" onClick={() => setManualMedia(null)} disabled={!canSendManualMessage}>Remove</button>
+                    <span>{manualMedia.kind === "image" ? t(locale, "inbox.image") : t(locale, "inbox.file")}: {manualMedia.fileName}</span>
+                    <button type="button" onClick={() => setManualMedia(null)} disabled={!canSendManualMessage}>{t(locale, "inbox.remove")}</button>
                   </div>
                 ) : null}
                 <div className="composer-toolbar">
                   <div style={{ display: "flex", gap: "10px", color: "var(--text-dim)", alignItems: "center", flexWrap: "wrap" }}>
-                    <label className={`composer-attach-button ${canSendManualMessage ? "" : "disabled"}`} title="Lampirkan gambar atau dokumen">
+                    <label className={`composer-attach-button ${canSendManualMessage ? "" : "disabled"}`} title={t(locale, "inbox.attach")}>
                       {Icons.upload}
-                      <span>Attach File</span>
+                      <span>{t(locale, "inbox.attach")}</span>
                       <input
                         type="file"
                         accept="image/*,.pdf,.doc,.docx,.txt"
@@ -544,8 +561,8 @@ export function InboxView({
                       <button
                         type="button"
                         className={`composer-icon-button emoji-trigger ${canSendManualMessage ? "" : "disabled"}`}
-                        title="Emoji"
-                        aria-label="Open emoji picker"
+                        title={t(locale, "inbox.emoji")}
+                        aria-label={t(locale, "inbox.emoji")}
                         aria-expanded={emojiPickerOpen}
                         disabled={!canSendManualMessage}
                         onClick={() => setEmojiPickerOpen((open) => !open)}
@@ -553,7 +570,7 @@ export function InboxView({
                         <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10" /><path d="M8 14s1.5 2 4 2 4-2 4-2" /><line x1="9" y1="9" x2="9.01" y2="9" /><line x1="15" y1="9" x2="15.01" y2="9" /></svg>
                       </button>
                       {emojiPickerOpen && (
-                        <div className="emoji-picker" role="menu" aria-label="Emoji picker">
+                        <div className="emoji-picker" role="menu" aria-label={t(locale, "inbox.emoji")}>
                           {composerEmojis.map((emoji) => (
                             <button
                               key={emoji}
@@ -578,14 +595,14 @@ export function InboxView({
                     disabled={!canSubmitManualMessage || busyKey === "conversation-manual-message"}
                     onClick={sendManualMessage}
                   >
-                    Kirim
+                    {t(locale, "inbox.send")}
                   </button>
                 </div>
               </div>
             </div>
           </div>
         ) : (
-          <EmptyState title="Pilih percakapan" copy="Pilih kontak di kiri untuk mulai chat." />
+          <EmptyState title={t(locale, "inbox.select")} copy={t(locale, "inbox.selectBody")} />
         )}
       </section>
 
@@ -594,18 +611,18 @@ export function InboxView({
           <>
             <div className="mobile-detail-nav">
               <button className="mobile-pane-btn" type="button" onClick={() => setMobilePane("chat")}>
-                Kembali ke chat
+                {t(locale, "inbox.backChat")}
               </button>
-              <strong>Detail percakapan</strong>
+              <strong>{t(locale, "inbox.conversationDetails")}</strong>
             </div>
             <section className="detail-section-v2">
-              <div className="detail-label-v2">Kontak</div>
+              <div className="detail-label-v2">{t(locale, "inbox.contact")}</div>
               <div className="customer-mini-profile">
                 <div className={`avatar avatar-lg ${conversationAvatarColor}`}>
                   {conversationInitials}
                 </div>
                 <div>
-                  <div className="customer-mini-name">{conversation.contactName || "Contact"}</div>
+                  <div className="customer-mini-name">{conversation.contactName || t(locale, "inbox.contactFallback")}</div>
                   <div className="customer-mini-phone">{conversation.phone || "-"}</div>
                 </div>
               </div>
@@ -616,7 +633,7 @@ export function InboxView({
                   onClick={() => openContactFromConversation?.(conversation)}
                   disabled={!conversation.contactId}
                 >
-                  Buka kontak
+                  {t(locale, "inbox.openContact")}
                 </button>
                 {canUseProspects ? (
                   <button
@@ -625,7 +642,7 @@ export function InboxView({
                     onClick={() => createDealFromConversation?.(conversation)}
                     disabled={busyKey === "deal-from-conversation"}
                   >
-                    Buat follow-up
+                    {t(locale, "inbox.followUp")}
                   </button>
                 ) : null}
               </div>
@@ -633,9 +650,9 @@ export function InboxView({
                 <div className="crm-list-stack" style={{ marginTop: "12px" }}>
                   {openDeals.slice(0, 3).map((deal) => (
                     <button className="crm-note-item deal-activity-item as-button" type="button" key={deal.id} onClick={() => openDealFromConversation?.(deal)}>
-                      <strong>{deal.title || "Deal aktif"}</strong>
-                      <span>{deal.stageName || "Pipeline"} {deal.valueAmount ? `- ${formatCurrencyIDR(deal.valueAmount)}` : ""}</span>
-                      <small>{deal.ownerName || "Unassigned"}</small>
+                      <strong>{deal.title || t(locale, "inbox.activeDeal")}</strong>
+                      <span>{deal.stageName || t(locale, "inbox.pipeline")} {deal.valueAmount ? `- ${formatCurrencyIDR(deal.valueAmount)}` : ""}</span>
+                      <small>{deal.ownerName || t(locale, "inbox.unassigned")}</small>
                     </button>
                   ))}
                 </div>
@@ -643,52 +660,52 @@ export function InboxView({
             </section>
 
             <section className="detail-section-v2">
-              <div className="detail-label-v2">Status Chat</div>
-              <div className="detail-field"><span className="detail-key">Mode</span><span>{modeBadge(conversation.mode)}</span></div>
+              <div className="detail-label-v2">{t(locale, "inbox.chatStatus")}</div>
+              <div className="detail-field"><span className="detail-key">{t(locale, "inbox.mode")}</span><span>{modeBadge(conversation.mode)}</span></div>
               <div className="detail-field"><span className="detail-key">WhatsApp</span><span className="detail-val">{conversation.whatsappSession || "-"}</span></div>
-              <div className="detail-field"><span className="detail-key">AI Agent</span><span className="detail-val">{conversation.aiAgentName || "-"}</span></div>
-              <div className="detail-field"><span className="detail-key">Assigned To</span><span className="detail-val">{conversation.assignedToName || "AI Assistant"}</span></div>
-              <div className="detail-field"><span className="detail-key">Priority</span><span className={`badge ${conversation.priority === "urgent" ? "red" : conversation.priority === "high" ? "orange" : "blue"}`}>{conversation.priority || "normal"}</span></div>
+              <div className="detail-field"><span className="detail-key">{t(locale, "inbox.agent")}</span><span className="detail-val">{conversation.aiAgentName || "-"}</span></div>
+              <div className="detail-field"><span className="detail-key">{t(locale, "inbox.assigned")}</span><span className="detail-val">{conversation.assignedToName || t(locale, "inbox.aiAssistant")}</span></div>
+              <div className="detail-field"><span className="detail-key">{t(locale, "inbox.priority")}</span><span className={`badge ${conversation.priority === "urgent" ? "red" : conversation.priority === "high" ? "orange" : "blue"}`}>{t(locale, `inbox.${conversation.priority || "normal"}`)}</span></div>
               <div className="detail-field"><span className="detail-key">SLA</span><span className="detail-val">{conversation.slaDueAt ? formatDateTime(conversation.slaDueAt) : "-"}</span></div>
-              <div className="detail-field"><span className="detail-key">Last inbound</span><span className="detail-val">{conversation.lastCustomerMessageAt ? formatDateTime(conversation.lastCustomerMessageAt) : "-"}</span></div>
-              {conversation.escalationReason ? <div className="detail-field"><span className="detail-key">Eskalasi</span><span className="detail-val">{formatTime(conversation.lastMessageAt)}</span></div> : null}
-              {conversation.escalationReason ? <div className="detail-field"><span className="detail-key">Reason</span><span className="detail-val text-sm">{conversation.escalationReason}</span></div> : null}
+              <div className="detail-field"><span className="detail-key">{t(locale, "inbox.lastInbound")}</span><span className="detail-val">{conversation.lastCustomerMessageAt ? formatDateTime(conversation.lastCustomerMessageAt) : "-"}</span></div>
+              {conversation.escalationReason ? <div className="detail-field"><span className="detail-key">{t(locale, "inbox.escalation")}</span><span className="detail-val">{formatTime(conversation.lastMessageAt)}</span></div> : null}
+              {conversation.escalationReason ? <div className="detail-field"><span className="detail-key">{t(locale, "inbox.reason")}</span><span className="detail-val text-sm">{conversation.escalationReason}</span></div> : null}
             </section>
 
             <section className="detail-section-v2 conversation-workflow-panel">
-              <div className="detail-label-v2">Workflow CRM</div>
+              <div className="detail-label-v2">{t(locale, "inbox.workflow")}</div>
               <div className="workflow-grid">
-                <label>Status
+                <label>{t(locale, "inbox.status")}
                   <select className="form-select" value={workflowDraft.status} onChange={(event) => setWorkflowDraft((current) => ({ ...current, status: event.target.value }))}>
-                    <option value="open">Terbuka</option>
-                    <option value="pending_human">Menunggu admin</option>
-                    <option value="resolved">Selesai</option>
+                    <option value="open">{t(locale, "inbox.openStatus")}</option>
+                    <option value="pending_human">{t(locale, "inbox.pendingAdmin")}</option>
+                    <option value="resolved">{t(locale, "inbox.resolved")}</option>
                   </select>
                 </label>
-                <label>Priority
+                <label>{t(locale, "inbox.priority")}
                   <select className="form-select" value={workflowDraft.priority} onChange={(event) => setWorkflowDraft((current) => ({ ...current, priority: event.target.value }))}>
-                    <option value="low">Low</option>
-                    <option value="normal">Normal</option>
-                    <option value="high">High</option>
-                    <option value="urgent">Urgent</option>
+                    <option value="low">{t(locale, "inbox.low")}</option>
+                    <option value="normal">{t(locale, "inbox.normal")}</option>
+                    <option value="high">{t(locale, "inbox.high")}</option>
+                    <option value="urgent">{t(locale, "inbox.urgent")}</option>
                   </select>
                 </label>
-                <label>Assign
+                <label>{t(locale, "inbox.assign")}
                   <select className="form-select" value={workflowDraft.assignedToId} onChange={(event) => setWorkflowDraft((current) => ({ ...current, assignedToId: event.target.value }))}>
-                    <option value="">Unassigned</option>
+                    <option value="">{t(locale, "inbox.unassigned")}</option>
                     {teamMembers.map((member) => <option key={member.id} value={member.id}>{member.name || member.username}</option>)}
                   </select>
                 </label>
-                <label>SLA due
+                <label>{t(locale, "inbox.slaDue")}
                   <input className="form-input" type="datetime-local" value={workflowDraft.slaDueAt} onChange={(event) => setWorkflowDraft((current) => ({ ...current, slaDueAt: event.target.value }))} />
                 </label>
               </div>
-              <textarea className="form-textarea workflow-note" value={workflowDraft.internalNote} onChange={(event) => setWorkflowDraft((current) => ({ ...current, internalNote: event.target.value }))} placeholder="Internal note untuk tim..." />
-              <button className="btn btn-secondary btn-sm" type="button" onClick={submitWorkflow} disabled={busyKey === "conversation-workflow"}>Simpan workflow</button>
+              <textarea className="form-textarea workflow-note" value={workflowDraft.internalNote} onChange={(event) => setWorkflowDraft((current) => ({ ...current, internalNote: event.target.value }))} placeholder={t(locale, "inbox.internalNote")} />
+              <button className="btn btn-secondary btn-sm" type="button" onClick={submitWorkflow} disabled={busyKey === "conversation-workflow"}>{t(locale, "inbox.saveWorkflow")}</button>
             </section>
 
             <section className="detail-section-v2">
-              <div className="detail-label-v2">Timeline</div>
+              <div className="detail-label-v2">{t(locale, "inbox.timeline")}</div>
               <div className="timeline-list-v2">
                 {timelineItems.length ? timelineItems.map((item) => (
                   <div className="timeline-item-v2" key={item.id}>
@@ -699,14 +716,14 @@ export function InboxView({
                     </div>
                   </div>
                 )) : (
-                  <EmptyState title="Belum ada timeline" copy="Aktivitas chat akan muncul setelah percakapan berjalan." compact />
+                  <EmptyState title={t(locale, "inbox.timelineEmpty")} copy={t(locale, "inbox.timelineEmptyBody")} compact />
                 )}
               </div>
             </section>
 
             {selectedConversation?.retrieval?.matches?.length ? (
               <section className="detail-section-v2">
-                <div className="detail-label-v2">AI Context</div>
+                <div className="detail-label-v2">{t(locale, "inbox.aiContext")}</div>
                 <div className="context-match-list-v2">
                   {selectedConversation.retrieval.matches.slice(0, 3).map((match, i) => (
                     <div className="context-match-v2" key={i}>
@@ -719,7 +736,7 @@ export function InboxView({
             ) : null}
           </>
         ) : (
-          <EmptyState title="Belum ada yang dipilih" copy="Detail muncul setelah kamu memilih chat." />
+          <EmptyState title={t(locale, "inbox.noneSelected")} copy={t(locale, "inbox.noneSelectedBody")} />
         )}
       </aside>
 

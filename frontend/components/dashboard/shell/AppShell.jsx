@@ -1,5 +1,6 @@
 import { Fragment, useEffect, useRef, useState } from "react";
 import { Icons, dashboardBadge, formatDateTime, toRoleLabel } from "../../../lib/dashboard-core";
+import { navigationLabel, t } from "../../../lib/i18n";
 
 export function LoginScreen({ error, loading, onLogin, onRegister, theme = "light" }) {
   const [credentials, setCredentials] = useState({ username: "", password: "" });
@@ -161,7 +162,7 @@ const mobilePrimaryNavByRole = {
 
 const mobileAccountNavItem = { id: "account", label: "Akun", icon: "account", mobileOnly: true };
 
-export function Sidebar({ role, navItems, activeView, onNavigate, summary, inbox, purchases, health, wallet, waConnected, busyKey, onReportIssue }) {
+export function Sidebar({ role, navItems, activeView, onNavigate, summary, inbox, purchases, health, wallet, waConnected, busyKey, onReportIssue, locale = "id" }) {
   const navRef = useRef(null);
   const [showMobileMore, setShowMobileMore] = useState(false);
   const isOwner = role === "owner";
@@ -171,10 +172,10 @@ export function Sidebar({ role, navItems, activeView, onNavigate, summary, inbox
   const usagePercent = monthlyLimit > 0 ? Math.min(100, Math.round((monthlyUsed / monthlyLimit) * 100)) : 0;
   const nextResetAt = wallet?.nextResetAt ? `Reset ${formatDateTime(wallet.nextResetAt)}` : "Menunggu data wallet";
   const navSectionOrder = [
-    { key: "primary", label: "Utama" },
-    { key: "ops", label: "Operasional" },
-    { key: "more", label: "Lainnya" },
-    { key: "tools", label: "Alat Terinstall" },
+    { key: "primary", label: t(locale, "nav.primary") },
+    { key: "ops", label: t(locale, "nav.operations") },
+    { key: "more", label: t(locale, "nav.more") },
+    { key: "tools", label: t(locale, "nav.tools") },
   ];
   const navGroupOf = (item) => (["ops", "more", "tools"].includes(item.group) ? item.group : "primary");
   const navSections = navSectionOrder
@@ -189,34 +190,14 @@ export function Sidebar({ role, navItems, activeView, onNavigate, summary, inbox
   const mobileOverflowItems = mobileAllNavItems.filter((item) => !mobilePrimaryIdSet.has(item.id));
   const mobileOverflowBadge = mobileOverflowItems.reduce((total, item) => total + dashboardBadge(item.id, { summary, inbox, purchases, health }), 0);
   const mobileMoreActive = mobileOverflowItems.some((item) => activeView === item.id);
-  const mobileNavLabel = (item) => ({
-    operations: "Inbox",
-    agents: "AI CS",
-    team: "Tim",
-    playground: "Coba AI",
-    contacts: "Kontak",
-    whatsapp: "WA",
-    businessTools: "Alat",
-    analytics: "Laporan",
-    upgrade: "Tagihan",
-    deals: "Lanjut",
-    commerceProducts: "Produk",
-    commerceOrders: "Pesanan",
-    booking: "Booking",
-    account: "Akun",
-    overview: "Beranda",
-    wallet: "Kredit",
-    usage: "Pakai",
-    health: "Status",
-    appsettings: "Harga",
-  }[item.id] || item.label);
+  const mobileNavLabel = (item) => navigationLabel(locale, item.id, item.label);
   const mobileMoreHint = (item) => {
     const shortLabel = mobileNavLabel(item);
-    if (item.mobileOnly) return "Pengaturan akun";
-    if (item.group === "tools") return "Alat bisnis";
-    if (["upgrade", "wallet"].includes(item.id)) return "Paket & kredit";
-    if (item.label !== shortLabel) return item.label;
-    return "Fitur dashboard";
+    if (item.mobileOnly) return t(locale, "account.settings");
+    if (item.group === "tools") return locale === "en" ? "Business tool" : "Alat bisnis";
+    if (["upgrade", "wallet"].includes(item.id)) return locale === "en" ? "Plans and credits" : "Paket & kredit";
+    if (navigationLabel(locale, item.id, item.label) !== shortLabel) return navigationLabel(locale, item.id, item.label);
+    return locale === "en" ? "Dashboard feature" : "Fitur dashboard";
   };
   const renderNavItem = (item, options = {}) => {
     const badge = dashboardBadge(item.id, { summary, inbox, purchases, health });
@@ -228,11 +209,11 @@ export function Sidebar({ role, navItems, activeView, onNavigate, summary, inbox
           onNavigate(item.id);
           if (options.closeMobileMore) setShowMobileMore(false);
         }}
-        title={item.label}
+        title={navigationLabel(locale, item.id, item.label)}
         data-tour={`nav-${item.id}`}
       >
         {Icons[item.icon]}
-        <span className="nav-label-full">{item.label}</span>
+        <span className="nav-label-full">{navigationLabel(locale, item.id, item.label)}</span>
         <span className="nav-label-mobile" aria-hidden="true">{mobileNavLabel(item)}</span>
         {badge > 0 ? <span className="nav-badge">{badge}</span> : null}
       </button>
@@ -289,20 +270,20 @@ export function Sidebar({ role, navItems, activeView, onNavigate, summary, inbox
           ))}
         </div>
 
-        <div className="mobile-nav-list" aria-label="Navigasi cepat mobile">
+        <div className="mobile-nav-list" aria-label={locale === "en" ? "Quick mobile navigation" : "Navigasi cepat mobile"}>
           {mobilePrimaryItems.map(renderNavItem)}
           {mobileOverflowItems.length ? (
             <button
               type="button"
               className={`nav-item mobile-more-trigger ${mobileMoreActive || showMobileMore ? "active" : ""}`}
               onClick={() => setShowMobileMore((current) => !current)}
-              aria-label="Buka fitur lainnya"
+              aria-label={t(locale, "nav.moreFeatures")}
               aria-expanded={showMobileMore}
-              title="Fitur lainnya"
+              title={t(locale, "nav.moreFeatures")}
             >
               {Icons.more}
-              <span className="nav-label-full">Lainnya</span>
-              <span className="nav-label-mobile" aria-hidden="true">Lainnya</span>
+              <span className="nav-label-full">{t(locale, "nav.more")}</span>
+              <span className="nav-label-mobile" aria-hidden="true">{t(locale, "nav.more")}</span>
               {mobileOverflowBadge > 0 ? <span className="nav-badge">{mobileOverflowBadge}</span> : null}
             </button>
           ) : null}
@@ -312,8 +293,8 @@ export function Sidebar({ role, navItems, activeView, onNavigate, summary, inbox
       {showMobileMore && mobileOverflowItems.length ? (
         <div className="mobile-more-menu" role="menu">
           <div className="mobile-more-menu-head">
-            <span>Fitur lainnya</span>
-            <button type="button" onClick={() => setShowMobileMore(false)} aria-label="Tutup fitur lainnya">
+            <span>{t(locale, "nav.moreFeatures")}</span>
+            <button type="button" onClick={() => setShowMobileMore(false)} aria-label={t(locale, "nav.closeMore")}>
               {Icons.close}
             </button>
           </div>
@@ -327,8 +308,8 @@ export function Sidebar({ role, navItems, activeView, onNavigate, summary, inbox
         <button className="sidebar-support" type="button" onClick={onReportIssue} disabled={busyKey === "support-report"}>
           <div className="support-icon">{Icons.help}</div>
           <div className="support-text">
-            <div className="support-title">Laporkan masalah</div>
-            <div className="support-subtitle">{busyKey === "support-report" ? "Mengirim laporan..." : "Kirim WA ke support"}</div>
+            <div className="support-title">{t(locale, "nav.support")}</div>
+            <div className="support-subtitle">{busyKey === "support-report" ? t(locale, "nav.sendingReport") : t(locale, "nav.supportHint")}</div>
           </div>
           <div style={{ marginLeft: "auto" }}>{Icons.arrowRight}</div>
         </button>
@@ -348,6 +329,7 @@ export function Topbar({
   onNavigate,
   onToggleTheme,
   logout,
+  locale = "id",
 }) {
   const [showNotifications, setShowNotifications] = useState(false);
   const [showProfileMenu, setShowProfileMenu] = useState(false);
@@ -361,14 +343,14 @@ export function Topbar({
       </div>
       <div className="topbar-search">
         {Icons.search}
-        <input type="text" placeholder="Cari kontak, chat, knowledge..." />
+        <input type="text" placeholder={t(locale, "top.search")} aria-label={t(locale, "top.search")} />
       </div>
 
       <div className="topbar-right">
         {showUpgradeEntry ? (
           <button type="button" className="topbar-upgrade-pill" onClick={() => onNavigate("upgrade")}>
             {Icons.wallet}
-            <span>Billing</span>
+            <span>{t(locale, "top.billing")}</span>
           </button>
         ) : null}
 
@@ -376,8 +358,8 @@ export function Topbar({
           <button
             type="button"
             className={`topbar-btn theme-toggle-btn ${theme === "dark" ? "is-dark" : ""}`}
-            aria-label={theme === "dark" ? "Gunakan mode terang" : "Gunakan mode gelap"}
-            title={theme === "dark" ? "Mode terang" : "Mode gelap"}
+            aria-label={theme === "dark" ? t(locale, "top.lightMode") : t(locale, "top.darkMode")}
+            title={theme === "dark" ? t(locale, "top.lightMode") : t(locale, "top.darkMode")}
             onClick={onToggleTheme}
           >
             {theme === "dark" ? Icons.sun : Icons.moon}
@@ -388,7 +370,7 @@ export function Topbar({
           <button
             type="button"
             className="topbar-btn"
-            aria-label="Notifications"
+            aria-label={t(locale, "top.notifications")}
             onClick={() => {
               setShowNotifications((current) => !current);
               setShowProfileMenu(false);
@@ -401,11 +383,11 @@ export function Topbar({
             <div className="topbar-dropdown notifications-dropdown">
               <div className="dropdown-header">
                 <div>
-                  <strong>Notifications</strong>
-                  <span>{unreadNotificationCount} unread</span>
+                  <strong>{t(locale, "top.notifications")}</strong>
+                  <span>{t(locale, "top.unread", { count: unreadNotificationCount })}</span>
                 </div>
                 {notifications.length ? (
-                  <button type="button" onClick={() => onMarkNotificationsRead()}>Mark read</button>
+                  <button type="button" onClick={() => onMarkNotificationsRead()}>{t(locale, "top.markRead")}</button>
                 ) : null}
               </div>
               <div className="notification-list">
@@ -430,7 +412,7 @@ export function Topbar({
                     </button>
                   );
                 }) : (
-                  <div className="empty-dropdown">No active notifications.</div>
+                  <div className="empty-dropdown">{locale === "en" ? "No active notifications." : "Tidak ada notifikasi aktif."}</div>
                 )}
               </div>
             </div>
@@ -480,10 +462,10 @@ export function Topbar({
                   setShowProfileMenu(false);
                 }}
               >
-                Account settings
+                {t(locale, "account.settings")}
               </button>
               <button type="button" className="danger-menu-item" onClick={logout}>
-                Logout
+                {t(locale, "top.logout")}
               </button>
             </div>
           ) : null}

@@ -4,6 +4,7 @@ import { useCallback, useDeferredValue, useEffect, useMemo, useRef, useState } f
 import { usePathname, useRouter } from "next/navigation";
 import QRCode from "qrcode";
 import { parseCoexistenceEvent, validateCoexistenceConfig } from "../../lib/meta-coexistence.mjs";
+import { navigationLabel, normalizeLocale } from "../../lib/i18n";
 import { LoginScreen, Sidebar, Topbar } from "./shell";
 import { Notice } from "./ui";
 import {
@@ -740,7 +741,7 @@ export default function DashboardApp() {
 
   const [purchaseForm, setPurchaseForm] = useState({ packageId: "", billingPeriod: "monthly", paymentMethod: "manual_transfer", notes: "Requested from dashboard" });
   const [packageForm, setPackageForm] = useState(() => emptyPackageForm());
-  const [accountProfileForm, setAccountProfileForm] = useState({ name: "" });
+  const [accountProfileForm, setAccountProfileForm] = useState({ name: "", preferredLocale: "id" });
   const [accountPasswordForm, setAccountPasswordForm] = useState({ currentPassword: "", newPassword: "", confirmPassword: "" });
   const [usageLogs, setUsageLogs] = useState([]);
   const [billingAnalytics, setBillingAnalytics] = useState(null);
@@ -774,6 +775,7 @@ export default function DashboardApp() {
   const [dashboardTheme, setDashboardTheme] = useState("light");
 
   const role = auth?.user?.role ?? "";
+  const locale = normalizeLocale(auth?.user?.preferredLocale);
   const firstRunOnboardingStorageKey = useMemo(
     () => firstRunOnboardingStorageKeyForAuth(auth),
     [auth?.user?.id, auth?.user?.username, auth?.user?.organizationId, auth?.user?.organization?.id]
@@ -896,6 +898,7 @@ export default function DashboardApp() {
     if (inboxTab === "ai") items = items.filter((item) => item.mode === "ai");
     if (inboxTab === "human") items = items.filter((item) => item.mode === "human");
     if (inboxTab === "pending") items = items.filter((item) => item.status === "pending_human");
+    if (inboxTab === "unread") items = items.filter((item) => Number(item.unreadCount || 0) > 0);
     if (inboxTab === "resolved") items = items.filter((item) => item.status === "resolved");
     if (activeInboxWaSessionId) items = items.filter((item) => item.whatsappSessionId === activeInboxWaSessionId);
     if (activeInboxAIAgentId) items = items.filter((item) => item.aiAgentId === activeInboxAIAgentId);
@@ -1032,7 +1035,7 @@ export default function DashboardApp() {
   }, [activeView, businessToolsReady, enabledBusinessToolKeys, role]);
 
   useEffect(() => {
-    setAccountProfileForm({ name: auth?.user?.name ?? "" });
+    setAccountProfileForm({ name: auth?.user?.name ?? "", preferredLocale: normalizeLocale(auth?.user?.preferredLocale) });
     if (!notificationStorageKey) {
       setNotificationReadIds([]);
       return;
@@ -1043,7 +1046,7 @@ export default function DashboardApp() {
     } catch {
       setNotificationReadIds([]);
     }
-  }, [auth?.user?.name, legacyNotificationStorageKey, notificationStorageKey]);
+  }, [auth?.user?.name, auth?.user?.preferredLocale, legacyNotificationStorageKey, notificationStorageKey]);
 
   useEffect(() => {
     if (!role || !isDashboardAppPath(pathname)) return;
@@ -1177,10 +1180,11 @@ export default function DashboardApp() {
   useEffect(() => {
     if (!auth?.token || !selectedConversation?.conversation?.id) return;
     const timer = window.setInterval(() => {
-      refreshConversation(selectedConversation.conversation.id).catch(() => {});
+      const shouldMarkRead = activeView === "operations" && document.visibilityState === "visible";
+      refreshConversation(selectedConversation.conversation.id, { markRead: shouldMarkRead }).catch(() => {});
     }, 6000);
     return () => window.clearInterval(timer);
-  }, [auth?.token, selectedConversation?.conversation?.id]);
+  }, [activeView, auth?.token, selectedConversation?.conversation?.id]);
 
   useEffect(() => {
     if (!auth?.token) return;
@@ -2192,15 +2196,21 @@ export default function DashboardApp() {
     setLastSyncedAt("");
   }
 
-  async function refreshConversation(id) {
+  async function markConversationRead(id) {
+    await requestJSON(`${apiBase}/api/conversations/${id}/read`, { method: "POST", body: JSON.stringify({}) });
+    setInbox((current) => current.map((item) => item.id === id ? { ...item, unreadCount: 0 } : item));
+  }
+
+  async function refreshConversation(id, { markRead = false } = {}) {
     const payload = await requestJSON(`${apiBase}/api/conversations/${id}`);
     setSelectedConversation(payload);
+    if (markRead) await markConversationRead(id);
   }
 
   async function fetchConversation(id) {
     try {
       setError("");
-      await refreshConversation(id);
+      await refreshConversation(id, { markRead: true });
     } catch (loadError) {
       setError(loadError.message);
     }
@@ -3573,12 +3583,12 @@ export default function DashboardApp() {
       setError("");
       const payload = await requestJSON(`${apiBase}/api/account/profile`, {
         method: "PUT",
-        body: JSON.stringify({ name: accountProfileForm.name }),
+        body: JSON.stringify({ name: accountProfileForm.name, preferredLocale: accountProfileForm.preferredLocale }),
       });
-      const nextAuth = { ...auth, user: payload.user };
+      const nextAuth = { ...auth, user: { ...auth.user, ...payload.user } };
       setAuth(nextAuth);
       window.localStorage.setItem(authStorageKey, JSON.stringify(nextAuth));
-      setAccountProfileForm({ name: payload.user?.name ?? "" });
+      setAccountProfileForm({ name: payload.user?.name ?? "", preferredLocale: normalizeLocale(payload.user?.preferredLocale) });
       await loadDashboardData(nextAuth);
     } catch (accountError) {
       setError(accountError.message);
@@ -3816,6 +3826,7 @@ export default function DashboardApp() {
           aiTyping={realtimeSnapshot?.aiTyping}
           busyKey={busyKey}
           onNotify={showToast}
+          locale={locale}
         />
       );
     }
@@ -4152,6 +4163,7 @@ export default function DashboardApp() {
           saveAccountProfile={saveAccountProfile}
           changeAccountPassword={changeAccountPassword}
           busyKey={busyKey}
+          locale={locale}
         />
       );
     }
@@ -4227,6 +4239,7 @@ export default function DashboardApp() {
           createMetaTemplate={createMetaTemplate}
           sendMetaTemplate={sendMetaTemplate}
           busyKey={busyKey}
+          locale={locale}
           navigateToChannels={() => navigateToView("whatsapp")}
         />
       );
@@ -4321,11 +4334,12 @@ export default function DashboardApp() {
         waConnected={canOpenChatOps}
         busyKey={busyKey}
         onReportIssue={reportDashboardIssue}
+        locale={locale}
       />
 
       <div className="dashboard-main main-content">
         <Topbar
-          title={activeMeta.title}
+          title={navigationLabel(locale, activeView, activeMeta.title)}
           auth={auth}
           theme={dashboardTheme}
           waStatus={displayWaStatus}
@@ -4336,12 +4350,13 @@ export default function DashboardApp() {
           onNavigate={navigateToView}
           onToggleTheme={toggleDashboardTheme}
           logout={logout}
+          locale={locale}
         />
 
         <div className={`dashboard-content page-body ${activeView === "operations" ? "inbox-page-body" : ""}`}>
-          {error ? <Notice tone="danger" title="Ada aksi yang gagal" text={error} /> : null}
+          {error ? <Notice tone="danger" title={locale === "en" ? "Action failed" : "Ada aksi yang gagal"} text={error} /> : null}
           {loadWarnings.length ? (
-            <Notice tone="warn" title="Sebagian data belum sempurna" text={loadWarnings.join(" ")} />
+            <Notice tone="warn" title={locale === "en" ? "Some data could not be loaded" : "Sebagian data belum sempurna"} text={loadWarnings.join(" ")} />
           ) : null}
           {renderActiveView()}
         </div>

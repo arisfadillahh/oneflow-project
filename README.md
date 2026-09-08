@@ -21,6 +21,8 @@ The dashboard uses a single Channel Center pattern at `/channels`. WhatsApp is t
 - Backend changes stay under `backend/`.
 - Frontend must not call AI, gateway, database or worker internals directly.
 - Production dashboard deployments follow `docs/production-deployment-guideline.md`.
+- Inbox unread state is tracked per dashboard agent through `POST /api/conversations/{id}/read`; opening a conversation clears only that agent's unread count.
+- Dashboard language is an account preference (`preferredLocale`: `id` or `en`) managed from Account settings and returned by login and `/api/me`.
 - Do not commit `.env` files, tokens, private keys, generated caches or node modules.
 
 ## Checks

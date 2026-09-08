@@ -29,7 +29,7 @@
     { "id": "booking", "pathPattern": "^/api/booking(?:/.*)?$", "auth": "required" },
     { "id": "deals", "pathPattern": "^/api/(?:deals|deal-activities|deal-pipelines|deal-stages)(?:/.*)?$", "auth": "required" },
     { "id": "contacts", "pathPattern": "^/api/(?:contacts|contact-tags|follow-up-tasks|message-templates|broadcasts)(?:/.*)?$", "auth": "required" },
-    { "id": "conversations", "pathPattern": "^/api/(?:inbox|conversations)(?:/.*)?$", "auth": "required" },
+    { "id": "conversations", "pathPattern": "^/api/(?:inbox|conversations)(?:/.*)?$", "auth": "required", "notes": "Inbox rows include unreadCount per signed-in agent. POST /api/conversations/{id}/read clears that agent's unread state." },
     { "id": "knowledge", "pathPattern": "^/api/(?:knowledge|job-positions)(?:/.*)?$", "auth": "required" },
     { "id": "ai-config", "pathPattern": "^/api/(?:ai-models|ai-agents|ai-settings|ai-runs|agents)(?:/.*)?$", "auth": "required" },
     { "id": "playground", "pathPattern": "^/api/playground(?:/.*)?$", "auth": "required", "notes": "Billed through app-backend, never direct browser-to-ai-service." },

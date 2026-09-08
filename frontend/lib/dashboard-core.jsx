@@ -557,7 +557,7 @@ export function settingsApiToDraft(settings) {
 }
 
 export function dashboardBadge(viewId, { summary, inbox, purchases, health }) {
-  if (viewId === "operations") return summary?.open ?? inbox.length;
+  if (viewId === "operations") return inbox.reduce((total, item) => total + Number(item.unreadCount || 0), 0);
   if (viewId === "wallet" || viewId === "upgrade") return purchases.filter((item) => ["requested", "pending"].includes(item.paymentStatus)).length;
   if (viewId === "health") return health?.systemAlerts?.length ?? health?.alerts?.length ?? 0;
   return 0;

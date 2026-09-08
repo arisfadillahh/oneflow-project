@@ -682,6 +682,84 @@ func TestManualReplyRequiresTakeoverAndSupportsMediaAfterTakeover(t *testing.T) 
 	}
 }
 
+func TestInboxUnreadCountClearsPerAgentAfterConversationRead(t *testing.T) {
+	pool := testPool(t)
+	httpServer := testServer(t, pool)
+	agentID, _ := createTestAgent(t, pool, "operator")
+	token := testTokenForAgent(t, "operator", agentID)
+	phone := fmt.Sprintf("+628163%09d", time.Now().UnixNano()%1_000_000_000)
+	conversationID := createTestConversation(t, pool, phone, "human", &agentID)
+
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+	var organizationID string
+	if err := pool.QueryRow(ctx, `SELECT organization_id::text FROM conversations WHERE id = $1`, conversationID).Scan(&organizationID); err != nil {
+		t.Fatalf("read conversation organization: %v", err)
+	}
+	if _, err := pool.Exec(ctx, `
+		INSERT INTO messages (organization_id, conversation_id, sender_type, direction, content_type, text, sent_at)
+		VALUES ($1, $2, 'customer', 'inbound', 'text', 'pesan belum dibaca', NOW())
+	`, organizationID, conversationID); err != nil {
+		t.Fatalf("insert inbound message: %v", err)
+	}
+
+	readUnread := func() float64 {
+		resp := doJSON(t, http.MethodGet, httpServer.URL+"/api/inbox", token, nil)
+		defer resp.Body.Close()
+		if resp.StatusCode != http.StatusOK {
+			body, _ := io.ReadAll(resp.Body)
+			t.Fatalf("inbox status = %d body=%s", resp.StatusCode, string(body))
+		}
+		var payload struct {
+			Items []map[string]any `json:"items"`
+		}
+		if err := json.NewDecoder(resp.Body).Decode(&payload); err != nil {
+			t.Fatalf("decode inbox: %v", err)
+		}
+		item := findItemByID(payload.Items, conversationID)
+		if item == nil {
+			t.Fatalf("conversation %s missing from inbox", conversationID)
+		}
+		return item["unreadCount"].(float64)
+	}
+
+	if got := readUnread(); got != 1 {
+		t.Fatalf("unread before opening = %v, want 1", got)
+	}
+	resp := doJSON(t, http.MethodPost, httpServer.URL+"/api/conversations/"+conversationID+"/read", token, map[string]any{})
+	resp.Body.Close()
+	if resp.StatusCode != http.StatusOK {
+		t.Fatalf("mark read status = %d, want 200", resp.StatusCode)
+	}
+	if got := readUnread(); got != 0 {
+		t.Fatalf("unread after opening = %v, want 0", got)
+	}
+}
+
+func TestAccountProfilePersistsSupportedLocale(t *testing.T) {
+	pool := testPool(t)
+	httpServer := testServer(t, pool)
+	agentID, _ := createTestAgent(t, pool, "operator")
+	token := testTokenForAgent(t, "operator", agentID)
+
+	resp := doJSON(t, http.MethodPut, httpServer.URL+"/api/account/profile", token, map[string]any{
+		"name":            "English Operator",
+		"preferredLocale": "en",
+	})
+	defer resp.Body.Close()
+	if resp.StatusCode != http.StatusOK {
+		body, _ := io.ReadAll(resp.Body)
+		t.Fatalf("profile update status = %d body=%s", resp.StatusCode, string(body))
+	}
+	var preferredLocale string
+	if err := pool.QueryRow(context.Background(), `SELECT preferred_locale FROM agents WHERE id = $1`, agentID).Scan(&preferredLocale); err != nil {
+		t.Fatalf("read preferred locale: %v", err)
+	}
+	if preferredLocale != "en" {
+		t.Fatalf("preferred locale = %q, want en", preferredLocale)
+	}
+}
+
 func TestReturnToAIDoesNotRequireWhatsAppConnected(t *testing.T) {
 	pool := testPool(t)
 	wa := newWAMock(t, false)

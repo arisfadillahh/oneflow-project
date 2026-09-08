@@ -656,6 +656,7 @@ func (s *Server) handleLogin(w http.ResponseWriter, r *http.Request) {
 		  a.username,
 		  a.role::text,
 		  a.password_hash,
+		  COALESCE(a.preferred_locale, 'id'),
 		  org.organization_id::text,
 		  org.organization_name,
 		  org.organization_slug,
@@ -680,8 +681,8 @@ func (s *Server) handleLogin(w http.ResponseWriter, r *http.Request) {
 		WHERE a.username = $1 AND a.is_active = TRUE
 	`, req.Username)
 
-	var id, name, username, role, passwordHash, organizationID, organizationName, organizationSlug, organizationRole string
-	if err := row.Scan(&id, &name, &username, &role, &passwordHash, &organizationID, &organizationName, &organizationSlug, &organizationRole); err != nil {
+	var id, name, username, role, passwordHash, preferredLocale, organizationID, organizationName, organizationSlug, organizationRole string
+	if err := row.Scan(&id, &name, &username, &role, &passwordHash, &preferredLocale, &organizationID, &organizationName, &organizationSlug, &organizationRole); err != nil {
 		_ = bcrypt.CompareHashAndPassword(dummyPasswordHash, []byte(req.Password))
 		s.writeAuthFailure(w, failureKey, http.StatusUnauthorized, map[string]string{"error": "invalid credentials"})
 		return
@@ -719,6 +720,7 @@ func (s *Server) handleLogin(w http.ResponseWriter, r *http.Request) {
 			"name":             name,
 			"username":         username,
 			"role":             role,
+			"preferredLocale":  preferredLocale,
 			"organizationId":   organizationID,
 			"organizationRole": organizationRole,
 			"organizationName": organizationName,
@@ -734,6 +736,7 @@ func (s *Server) handleMe(w http.ResponseWriter, r *http.Request) {
 		  a.name,
 		  a.username,
 		  a.role::text,
+		  COALESCE(a.preferred_locale, 'id'),
 		  o.id::text,
 		  o.name,
 		  o.slug,
@@ -747,8 +750,8 @@ func (s *Server) handleMe(w http.ResponseWriter, r *http.Request) {
 		  AND o.status = 'active'
 	`, s.agentID(r.Context()), s.organizationID(r.Context()))
 
-	var id, name, username, role, organizationID, organizationName, organizationSlug, organizationRole string
-	if err := row.Scan(&id, &name, &username, &role, &organizationID, &organizationName, &organizationSlug, &organizationRole); err != nil {
+	var id, name, username, role, preferredLocale, organizationID, organizationName, organizationSlug, organizationRole string
+	if err := row.Scan(&id, &name, &username, &role, &preferredLocale, &organizationID, &organizationName, &organizationSlug, &organizationRole); err != nil {
 		writeJSON(w, http.StatusNotFound, map[string]string{"error": "user not found"})
 		return
 	}
@@ -757,6 +760,7 @@ func (s *Server) handleMe(w http.ResponseWriter, r *http.Request) {
 		"name":             name,
 		"username":         username,
 		"role":             role,
+		"preferredLocale":  preferredLocale,
 		"organizationId":   organizationID,
 		"organizationRole": organizationRole,
 		"organization": map[string]string{
@@ -774,7 +778,8 @@ func (s *Server) handleAccountProfile(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var req struct {
-		Name string `json:"name"`
+		Name            string `json:"name"`
+		PreferredLocale string `json:"preferredLocale"`
 	}
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		writeJSON(w, http.StatusBadRequest, map[string]string{"error": "invalid request"})
@@ -789,30 +794,40 @@ func (s *Server) handleAccountProfile(w http.ResponseWriter, r *http.Request) {
 		writeJSON(w, http.StatusBadRequest, map[string]string{"error": "name is too long"})
 		return
 	}
+	preferredLocale := strings.ToLower(strings.TrimSpace(req.PreferredLocale))
+	if preferredLocale == "" {
+		preferredLocale = "id"
+	}
+	if preferredLocale != "id" && preferredLocale != "en" {
+		writeJSON(w, http.StatusBadRequest, map[string]string{"error": "preferredLocale must be id or en"})
+		return
+	}
 
 	row := s.db.QueryRow(r.Context(), `
 		UPDATE agents
 		SET name = $2,
+		    preferred_locale = $3,
 		    updated_at = NOW()
 		WHERE id = $1
-		RETURNING id, name, username, role
-	`, s.agentID(r.Context()), name)
+		RETURNING id, name, username, role, preferred_locale
+	`, s.agentID(r.Context()), name, preferredLocale)
 
-	var id, updatedName, username, role string
-	if err := row.Scan(&id, &updatedName, &username, &role); err != nil {
+	var id, updatedName, username, role, updatedLocale string
+	if err := row.Scan(&id, &updatedName, &username, &role, &updatedLocale); err != nil {
 		writeJSON(w, http.StatusNotFound, map[string]string{"error": "user not found"})
 		return
 	}
-	if err := s.insertAuditLog(r.Context(), "account.profile_update", "agent", id, map[string]any{"name": updatedName}); err != nil {
+	if err := s.insertAuditLog(r.Context(), "account.profile_update", "agent", id, map[string]any{"name": updatedName, "preferredLocale": updatedLocale}); err != nil {
 		writeJSON(w, http.StatusInternalServerError, map[string]string{"error": err.Error()})
 		return
 	}
 	writeJSON(w, http.StatusOK, map[string]any{
 		"user": map[string]string{
-			"id":       id,
-			"name":     updatedName,
-			"username": username,
-			"role":     role,
+			"id":              id,
+			"name":            updatedName,
+			"username":        username,
+			"role":            role,
+			"preferredLocale": updatedLocale,
 		},
 	})
 }
@@ -1643,6 +1658,7 @@ func (s *Server) handleInbox(w http.ResponseWriter, r *http.Request) {
 		  c.priority,
 		  c.sla_due_at,
 		  COALESCE(c.internal_note, ''),
+		  COALESCE(unread.unread_count, 0),
 		  COALESCE(deal_stats.open_deals, 0),
 		  COALESCE(deal_stats.open_deal_items, '[]'::jsonb)::text
 		FROM conversations c
@@ -1651,6 +1667,18 @@ func (s *Server) handleInbox(w http.ResponseWriter, r *http.Request) {
 		LEFT JOIN ai_agents aa ON aa.id = c.ai_agent_id AND aa.organization_id = c.organization_id
 		LEFT JOIN agents a ON a.id = c.assigned_to
 		LEFT JOIN messages m ON m.id = c.last_message_id AND m.organization_id = c.organization_id
+		LEFT JOIN conversation_reads cr
+		  ON cr.conversation_id = c.id
+		 AND cr.organization_id = c.organization_id
+		 AND cr.agent_id = $2
+		LEFT JOIN LATERAL (
+		  SELECT COUNT(*) AS unread_count
+		  FROM messages unread_message
+		  WHERE unread_message.conversation_id = c.id
+		    AND unread_message.organization_id = c.organization_id
+		    AND unread_message.direction = 'inbound'
+		    AND COALESCE(unread_message.sent_at, unread_message.created_at) > COALESCE(cr.last_read_at, '-infinity'::timestamptz)
+		) unread ON TRUE
 		LEFT JOIN LATERAL (
 		  SELECT
 		    COUNT(*) FILTER (WHERE d.status = 'open') AS open_deals,
@@ -1683,7 +1711,7 @@ func (s *Server) handleInbox(w http.ResponseWriter, r *http.Request) {
 		) inbound ON TRUE
 		WHERE c.channel = 'whatsapp' AND c.organization_id = $1
 		ORDER BY c.last_message_at DESC
-	`, s.organizationID(r.Context()))
+	`, s.organizationID(r.Context()), s.agentID(r.Context()))
 	if err != nil {
 		writeJSON(w, http.StatusInternalServerError, map[string]string{"error": err.Error()})
 		return
@@ -1695,8 +1723,8 @@ func (s *Server) handleInbox(w http.ResponseWriter, r *http.Request) {
 		var id, contactID, contactName, phone, mode, status, whatsAppSessionID, whatsAppSessionLabel, whatsappProvider, aiAgentID, aiAgentName, assignedToID, assignedToName, lastMessageText, escalationReason, priority, internalNote, openDealsJSON string
 		var lastMessageAt time.Time
 		var slaDueAt, lastCustomerMessageAt *time.Time
-		var openDealCount int
-		if err := rows.Scan(&id, &contactID, &contactName, &phone, &mode, &status, &whatsAppSessionID, &whatsAppSessionLabel, &whatsappProvider, &aiAgentID, &aiAgentName, &assignedToID, &assignedToName, &lastMessageText, &lastMessageAt, &lastCustomerMessageAt, &escalationReason, &priority, &slaDueAt, &internalNote, &openDealCount, &openDealsJSON); err != nil {
+		var unreadCount, openDealCount int
+		if err := rows.Scan(&id, &contactID, &contactName, &phone, &mode, &status, &whatsAppSessionID, &whatsAppSessionLabel, &whatsappProvider, &aiAgentID, &aiAgentName, &assignedToID, &assignedToName, &lastMessageText, &lastMessageAt, &lastCustomerMessageAt, &escalationReason, &priority, &slaDueAt, &internalNote, &unreadCount, &openDealCount, &openDealsJSON); err != nil {
 			writeJSON(w, http.StatusInternalServerError, map[string]string{"error": err.Error()})
 			return
 		}
@@ -1722,6 +1750,7 @@ func (s *Server) handleInbox(w http.ResponseWriter, r *http.Request) {
 			"priority":              priority,
 			"slaDueAt":              slaDueAt,
 			"internalNote":          internalNote,
+			"unreadCount":           unreadCount,
 			"openDealCount":         openDealCount,
 			"openDeals":             parseJSONValue(openDealsJSON),
 		}
@@ -4426,6 +4455,9 @@ func (s *Server) handleConversationRoutes(w http.ResponseWriter, r *http.Request
 
 	if len(parts) == 2 && r.Method == http.MethodPost {
 		switch parts[1] {
+		case "read":
+			s.handleConversationRead(w, r, id)
+			return
 		case "takeover":
 			s.handleTakeover(w, r, id)
 			return
@@ -4451,6 +4483,46 @@ func (s *Server) handleConversationRoutes(w http.ResponseWriter, r *http.Request
 	}
 
 	http.NotFound(w, r)
+}
+
+func (s *Server) handleConversationRead(w http.ResponseWriter, r *http.Request, id string) {
+	role := s.role(r.Context())
+	if role == "owner" {
+		writeJSON(w, http.StatusForbidden, map[string]string{"error": "owner cannot access client chat inbox"})
+		return
+	}
+
+	result, err := s.db.Exec(r.Context(), `
+		INSERT INTO conversation_reads (organization_id, conversation_id, agent_id, last_read_at, updated_at)
+		SELECT
+		  c.organization_id,
+		  c.id,
+		  $3,
+		  COALESCE((
+		    SELECT MAX(COALESCE(m.sent_at, m.created_at))
+		    FROM messages m
+		    WHERE m.organization_id = c.organization_id
+		      AND m.conversation_id = c.id
+		      AND m.direction = 'inbound'
+		  ), NOW()),
+		  NOW()
+		FROM conversations c
+		WHERE c.id = $1 AND c.organization_id = $2
+		ON CONFLICT (conversation_id, agent_id)
+		DO UPDATE SET
+		  organization_id = EXCLUDED.organization_id,
+		  last_read_at = GREATEST(conversation_reads.last_read_at, EXCLUDED.last_read_at),
+		  updated_at = NOW()
+	`, id, s.organizationID(r.Context()), s.agentID(r.Context()))
+	if err != nil {
+		writeJSON(w, http.StatusInternalServerError, map[string]string{"error": err.Error()})
+		return
+	}
+	if result.RowsAffected() == 0 {
+		writeJSON(w, http.StatusNotFound, map[string]string{"error": "conversation not found"})
+		return
+	}
+	writeJSON(w, http.StatusOK, map[string]any{"status": "read", "unreadCount": 0})
 }
 
 func (s *Server) handleConversationDetail(w http.ResponseWriter, r *http.Request, id string) {
