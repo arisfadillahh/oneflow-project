@@ -7853,6 +7853,19 @@ tbody tr:last-child td { border-bottom: none; }
   grid-template-columns: minmax(220px, 1fr) minmax(220px, 1fr) auto;
 }
 
+.channel-connect-form-instagram-add {
+  grid-template-columns: minmax(260px, 1fr) auto auto;
+  padding-top: 0;
+}
+
+.channel-add-heading {
+  padding: 4px 16px 10px;
+}
+
+.channel-add-heading p {
+  margin: 3px 0 0;
+}
+
 .channel-connect-form .form-group {
   margin: 0;
 }
@@ -7924,6 +7937,8 @@ tbody tr:last-child td { border-bottom: none; }
   .channel-picker { padding: 14px 0 16px; }
   .channel-connect-form,
   .channel-connect-form-wa { grid-template-columns: 1fr; padding-inline: 0; }
+  .channel-connect-form-instagram-add { grid-template-columns: 1fr; }
+  .channel-add-heading { padding-inline: 0; }
   .channel-connect-action { width: 100%; }
   .channel-connection-summary { grid-template-columns: auto minmax(0, 1fr); margin-inline: 0; }
   .channel-connection-state,

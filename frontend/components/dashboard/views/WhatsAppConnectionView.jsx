@@ -52,6 +52,7 @@ export function WhatsAppConnectionView({
   templateToolsOnSeparatePage = false
 }) {
   const [instagramAgentId, setInstagramAgentId] = useState("");
+  const [instagramConnectOpen, setInstagramConnectOpen] = useState(false);
   const [setupChannel, setSetupChannel] = useState("");
   const hasSessions = sessions.length > 0;
   const hasAIAgents = aiAgents.some((agent) => agent.isActive !== false);
@@ -132,12 +133,16 @@ export function WhatsAppConnectionView({
           <div>
             <div className="channel-setup-eyebrow">Instagram</div>
             <div className="card-title">{instagramSessions.length ? "Instagram sudah terhubung" : "Hubungkan Instagram"}</div>
-            <div className="card-subtitle">{instagramSessions.length ? "DM pelanggan akan masuk ke Inbox Oneflow." : "Pilih AI yang akan menjawab, lalu login ke Instagram. Tidak perlu menyalin token atau mengatur webhook."}</div>
+            <div className="card-subtitle">{instagramSessions.length ? `${instagramSessions.length} akun aktif. Kamu bisa mengelola atau menambah akun di sini.` : "Pilih AI yang akan menjawab, lalu login ke Instagram. Tidak perlu menyalin token atau mengatur webhook."}</div>
           </div>
-          <button className="btn btn-ghost btn-sm" type="button" onClick={() => setSetupChannel("")}>Tutup</button>
+          <div className="row-actions">
+            {canManageInstagram && instagramSessions.length && !instagramConnectOpen ? <button className="btn btn-primary btn-sm" type="button" onClick={() => setInstagramConnectOpen(true)}>Tambah akun Instagram</button> : null}
+            <button className="btn btn-ghost btn-sm" type="button" onClick={() => { setInstagramConnectOpen(false); setSetupChannel(""); }}>Tutup</button>
+          </div>
         </div>
-        {canManageInstagram && !instagramSessions.length ? (
-          <div className="channel-connect-form">
+        {canManageInstagram && (!instagramSessions.length || instagramConnectOpen) ? (<>
+          {instagramSessions.length ? <div className="channel-add-heading"><strong>Tambah akun Instagram</strong><p className="text-sm text-muted">Pilih AI yang akan menangani DM dari akun baru ini.</p></div> : null}
+          <div className={`channel-connect-form ${instagramSessions.length ? "channel-connect-form-instagram-add" : ""}`}>
             <label className="form-group">
               <span className="form-label">AI yang membalas pelanggan</span>
               <select className="form-select" value={selectedInstagramAgentId} onChange={(event) => setInstagramAgentId(event.target.value)} disabled={!hasAIAgents || isInstagramBusy} aria-label="AI agent untuk Instagram">
@@ -146,11 +151,12 @@ export function WhatsAppConnectionView({
               </select>
             </label>
             <button className="btn btn-primary channel-connect-action" type="button" onClick={() => connectInstagram?.(selectedInstagramAgentId)} disabled={!selectedInstagramAgentId || isInstagramBusy}>
-              {busyKey === "instagram-connect" ? "Membuka Instagram..." : "Lanjutkan dengan Instagram"}
+              {busyKey === "instagram-connect" ? "Membuka Instagram..." : instagramSessions.length ? "Login dan tambahkan akun" : "Lanjutkan dengan Instagram"}
             </button>
+            {instagramSessions.length ? <button className="btn btn-secondary channel-connect-action" type="button" onClick={() => setInstagramConnectOpen(false)} disabled={isInstagramBusy}>Batal</button> : null}
             <p className="channel-connect-help">Setelah login, izinkan akses pesan. Kamu akan kembali otomatis ke halaman ini.</p>
           </div>
-        ) : !canManageInstagram && !instagramSessions.length ? <p className="text-sm text-muted">Minta admin organisasi untuk menghubungkan akun Instagram.</p> : null}
+        </>) : !canManageInstagram && !instagramSessions.length ? <p className="text-sm text-muted">Minta admin organisasi untuk menghubungkan akun Instagram.</p> : null}
         {instagramSessions.map((session) => {
           const agent = aiAgents.find((item) => item.id === session.aiAgentId);
           return <div className="channel-connection-summary" key={session.id}>

@@ -37,6 +37,15 @@ Every deployment must record:
 
 Do not call a release synchronized only because the page returns HTTP 200. Compiled assets, feature behavior and responsive UI must be checked.
 
+## Release record: Instagram add-account discoverability 2026-09-09
+
+- Scope: kept `Tambah akun Instagram` visible to organization admins after an Instagram account is already connected; the AI assignment and Meta login form opens inline and can be cancelled without navigation.
+- UX verification: account `qwe` showed the action with connected `@itsoneflow`; opening the action displayed the AI selector, `Login dan tambahkan akun`, and `Batal`; cancelling restored the connected-account list.
+- Verification: frontend tests passed 45/45, production build passed with 25 routes, and no backend service was changed or recreated.
+- Frontend image: `oneflow-dashboard-web:channels-instagram-add-v10-20260909`, image ID and local digest `sha256:ca960ff05ca11ba26ee4ca09df9338eae9132e903cd88981abd18399615f85ef`.
+- Compose backup: `/home/goffath/oneflow-deploy/docker-compose.before-channels-instagram-add-v10-20260909.yml`.
+- Production checks: container healthy; `/channels` and `/health` returned HTTP 200.
+
 ## Release record: single-page Channels overview 2026-09-09
 
 - Scope: replaced the channel-tab interaction with one connection overview that shows WhatsApp, Instagram and TikTok statuses together. No setup panel is open by default.

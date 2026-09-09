@@ -21,6 +21,9 @@ test("Instagram-only accounts can use the shared inbox without faking WhatsApp s
 test("Channels gives Instagram a real connect flow instead of coming-soon copy", () => {
   assert.match(channelSource, /Hubungkan Instagram/);
   assert.match(channelSource, /Lanjutkan dengan Instagram/);
+  assert.match(channelSource, /Tambah akun Instagram/);
+  assert.match(channelSource, /Login dan tambahkan akun/);
+  assert.match(channelSource, /!instagramSessions\.length \|\| instagramConnectOpen/);
   assert.match(channelSource, /Cek koneksi/);
   assert.match(channelSource, /instagramSessions\.length \? "Aktif · Kelola" : "Belum aktif · Hubungkan"/);
   assert.doesNotMatch(channelSource, /<strong>Instagram<\/strong>[\s\S]{0,250}Segera hadir/);
