@@ -2,6 +2,15 @@
 
 Historical inspection snapshot. Deployment and official-only retirement updates are recorded in [the 2026-09-06 QA report](official-only-dark-mode-qa-2026-09-06.md). Statements below about deployment status describe the earlier inspection, not the current testing server.
 
+## Public Availability Update (2026-09-17)
+
+- The Meta app is now in **Live** mode. Public onboarding is no longer restricted to Facebook accounts with an app role.
+- `whatsapp_business_messaging` has **Advanced access granted** and is active.
+- `whatsapp_business_management` has **Advanced access granted** and is active.
+- The production endpoint `/api/whatsapp/meta/config` was checked with an authenticated test account and returned `enabled=true`, `onboardingMode=coexistence`, numeric App ID and configuration ID values, and Graph API `v23.0`.
+- Oneflow continues to use the official Meta Embedded Signup flow. No unofficial WhatsApp provider or QR fallback is permitted.
+- A final real-number onboarding still requires the customer to authenticate with Meta and explicitly select their own Business Portfolio, WABA, and phone number. That consent step must not be automated or bypassed.
+
 ## Product Decision
 
 User confirmed official WhatsApp Business App coexistence on 2026-09-05. Customers must not be instructed to delete their WhatsApp Business account, reset data, or unregister their existing number. Do not silently fall back to standalone Cloud API migration when coexistence is unavailable. Explain eligibility failures and leave the existing account untouched.
@@ -13,9 +22,9 @@ Preserving the Business App account is distinct from importing existing chats in
 Read-only inspection of the logged-in Meta Developers account:
 
 - Oneflow app ID: `1460232068764576`.
-- App mode: Development.
+- App mode at the time of this historical inspection: Development. It was changed to Live on 2026-09-17; see the public availability update above.
 - Business verification: Approved.
-- Tech Provider onboarding page: 1 of 2 steps complete; App Review remains a gate.
+- Tech Provider onboarding at the time of this historical inspection was incomplete. Both required WhatsApp permissions have since received Advanced Access.
 - Signup configuration ID: `1768328367945778`.
 - Existing hosted signup link uses `featureType=whatsapp_business_app_onboarding`, session info version 3, and redirect `https://oneflow.id/dashboard`.
 - Configuration access token: system-user, expires after 60 days. Confirmed from selected, disabled controls, not just the configuration name.
