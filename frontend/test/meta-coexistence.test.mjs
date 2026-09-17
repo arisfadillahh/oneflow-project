@@ -27,6 +27,13 @@ test("WhatsApp management includes disconnected sessions for recovery", () => {
   assert.match(recovery, /await loadDashboardData/);
 });
 
+test("reconnecting a customer session always uses official Embedded Signup", () => {
+  const source = readFileSync(new URL("../components/dashboard/DashboardApp.jsx", import.meta.url), "utf8");
+  const reconnect = source.split("async function reconnectOfficialWhatsApp")[1].split("async function loadMetaTemplates")[0];
+  assert.match(reconnect, /await connectOfficialWhatsApp\(sessionId\)/);
+  assert.doesNotMatch(reconnect, /meta-test-connect|testEnabled/);
+});
+
 test("mobile dashboard does not block the WhatsApp connection view", () => {
   const source = readFileSync(new URL("../components/dashboard/DashboardApp.jsx", import.meta.url), "utf8");
   const allowed = source.match(/const mobileOperationsViews = \{([\s\S]*?)\n\};/)[1];

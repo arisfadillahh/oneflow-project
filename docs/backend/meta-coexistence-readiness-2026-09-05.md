@@ -7,7 +7,7 @@ Historical inspection snapshot. Deployment and official-only retirement updates 
 - The Meta app is now in **Live** mode. Public onboarding is no longer restricted to Facebook accounts with an app role.
 - `whatsapp_business_messaging` has **Advanced access granted** and is active.
 - `whatsapp_business_management` has **Advanced access granted** and is active.
-- The production endpoint `/api/whatsapp/meta/config` was checked with an authenticated test account and returned `enabled=true`, `onboardingMode=coexistence`, numeric App ID and configuration ID values, and Graph API `v23.0`.
+- The production endpoint `/api/whatsapp/meta/config` was checked with an authenticated test account and returned `enabled=true`, `onboardingMode=coexistence`, configuration ID `927419003754677`, and Graph API `v23.0`.
 - Oneflow continues to use the official Meta Embedded Signup flow. No unofficial WhatsApp provider or QR fallback is permitted.
 - A final real-number onboarding still requires the customer to authenticate with Meta and explicitly select their own Business Portfolio, WABA, and phone number. That consent step must not be automated or bypassed.
 
@@ -25,7 +25,7 @@ Read-only inspection of the logged-in Meta Developers account:
 - App mode at the time of this historical inspection: Development. It was changed to Live on 2026-09-17; see the public availability update above.
 - Business verification: Approved.
 - Tech Provider onboarding at the time of this historical inspection was incomplete. Both required WhatsApp permissions have since received Advanced Access.
-- Signup configuration ID: `1768328367945778`.
+- Historical signup configuration ID: `1768328367945778`. Production moved to the approved Tech Provider configuration `927419003754677` on 2026-09-17.
 - Existing hosted signup link uses `featureType=whatsapp_business_app_onboarding`, session info version 3, and redirect `https://oneflow.id/dashboard`.
 - Configuration access token: system-user, expires after 60 days. Confirmed from selected, disabled controls, not just the configuration name.
 - JavaScript SDK domain: `https://oneflow.id/`; configured OAuth redirect: `https://oneflow.id/dashboard`.

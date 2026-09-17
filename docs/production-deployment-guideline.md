@@ -37,6 +37,14 @@ Every deployment must record:
 
 Do not call a release synchronized only because the page returns HTTP 200. Compiled assets, feature behavior and responsive UI must be checked.
 
+## Release record: public WhatsApp Embedded Signup 2026-09-17
+
+- Scope: switched production to the approved Tech Provider configuration `927419003754677` and made disconnected customer sessions always reopen official Meta Embedded Signup instead of the internal Meta test connector.
+- Meta verification: app Live; Tech Provider onboarding 2 of 2 complete; `whatsapp_business_messaging` and `whatsapp_business_management` have Advanced Access; the corrected configuration opens the Meta onboarding consent screen without the previous Business Portfolio rejection.
+- Verification: frontend tests passed 46/46; local and Ubuntu production builds passed with 25 routes; dashboard and backend containers healthy; `/health`, `/channels`, and `/whatsapp` returned HTTP 200.
+- Frontend image: `oneflow-dashboard-web:wa-public-connect-20260917`, image ID `sha256:cc64062057dc`.
+- Compose backups: `/home/goffath/oneflow-deploy/docker-compose.before-meta-config-20260917.yml` and `/home/goffath/oneflow-deploy/docker-compose.before-wa-public-connect-20260917.yml`.
+
 ## Release record: Instagram add-account discoverability 2026-09-09
 
 - Scope: kept `Tambah akun Instagram` visible to organization admins after an Instagram account is already connected; the AI assignment and Meta login form opens inline and can be cancelled without navigation.
